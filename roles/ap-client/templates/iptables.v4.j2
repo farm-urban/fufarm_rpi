@@ -58,13 +58,13 @@
 # ALLOW ESTABLISHED CONNECTIONS
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Port forwarding for AP
--A FORWARD -i uap0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i wlan0 -o uap0 -j ACCEPT
+# Port forwarding for AP 
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -j ACCEPT
 
 # DHCP and DNS for AP
--A INPUT -p udp --sport 67:68 -i uap0 -j ACCEPT
--A INPUT -p udp --dport 53 -i uap0 -j ACCEPT
+-A INPUT -p udp --sport 67:68 -i {{ wifi_ap_interface }} -j ACCEPT
+-A INPUT -p udp --dport 53 -i {{ wifi_ap_interface }} -j ACCEPT
 
 # For Debugging
 #-N LOGGING
@@ -80,5 +80,14 @@ COMMIT
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [956:70797]
--A POSTROUTING -s 192.168.4.0/24 -o wlan0 -j MASQUERADE
+-A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
 COMMIT
+
+# Looks like below not required - from https://github.com/jsphpl/ansible-raspi-accesspoint
+#*filter
+#:INPUT ACCEPT [132:8265]
+#:FORWARD ACCEPT [0:0]
+#:OUTPUT ACCEPT [12:872]
+#-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+#-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+#COMMIT

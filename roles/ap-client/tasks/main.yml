@@ -14,7 +14,7 @@
       #- dhcpcd # Present by default
       - dnsmasq
       - hostapd
-      - ufw
+      - iptables-persistent  # auto-loads iptables rules on boot
     state: present
 
 - name: Enable and unmask hostapd
@@ -28,10 +28,6 @@
     name: dnsmasq
     enabled: yes
     masked: no
-
-- name: Enable UFW
-  community.general.ufw:
-    state: enabled
 
 #
 # Wireless interfaces
@@ -108,31 +104,19 @@
     state: present
     reload: yes
 
-## Configure firewall with ufw or iptables
-- name: 'Allow docker DEFAULT_FORWARD_POLICY=ACCEPT'
-  community.general.ufw:
-      direction: routed
-      default: allow
-      route: yes
+## Configure firewall with iptables
+- name: Install iptables rules
+  template:
+    src: templates/rules.v4.j2
+    dest: /etc/iptables/rules.v4
 
-- name: add NAT to ufw
-  blockinfile:
-    path: /etc/ufw/before.rules
-    block: |
-      # NAT table rules
-      *nat
-      :POSTROUTING ACCEPT [0:0]
-      # Forward traffic through interface
-      --append POSTROUTING --source {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} --out-interface {{ wifi_ap_interface }} --jump MASQUERADE
-      # don't delete the 'COMMIT' line or these nat table rules won't be processed
-      COMMIT
-    insertbefore: "^# Don't delete these required lines"
+# This will load a state from a file, with a rollback in case of access loss
+- name: restore firewall state from a file
+  community.general.iptables_state:
+    state: restored
+    path: /etc/iptables/rules.v4
+  async: "{{ ansible_timeout }}"
+  poll: 0
   notify:
-    - Restart ufw
-  # notify:
-  #   - Restart network # Do this at end rather then restarting each individual service
-
-#sudo iptables --table nat -A POSTROUTING --out-interface wlan0 --source 192.168.4.0/24 -j MASQUERADE
-#sudo iptables --append FORWARD --in-interface uap0 --out-interface  wlan0 --match state --state RELATED,ESTABLISHED --jump ACCEPT
-#sudo iptables --append FORWARD --in-interface wlan0 --out-interface  uap0 --jump ACCEPT
+    - Restart network # Do this at end rather then restarting each individual service
 
