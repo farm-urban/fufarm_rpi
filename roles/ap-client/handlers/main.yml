@@ -1,0 +1,11 @@
+---
+- name: Restart network
+  service:
+    name: network
+    state: restarted
+
+# - name: Reload wpa_supplicant
+#   ansible.builtin.systemd:
+#     name: wpa_supplicant
+#     daemon_reload: yes
+#     state: reloaded

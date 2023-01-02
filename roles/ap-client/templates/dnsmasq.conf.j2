@@ -1,0 +1,16 @@
+# Configuration file for dnsmasq.
+#
+# Format is one option per line, legal options are the same
+# as the long options legal on the command line. See
+# "/usr/sbin/dnsmasq --help" or "man 8 dnsmasq" for details.
+# {{ ansible_managed }}
+
+interface={{ wifi_ap_interface }}  
+listen-address={{ wifi_ap_address }}   # Specify the address to listen on  
+bind-dynamic         # Bind to the interface
+server={{ dns_server}}       # DNS to use
+domain-needed        # Don't forward short names  
+bogus-priv           # Drop the non-routed address spaces.  
+#dhcp-range=192.168.4.100,192.168.4.200,255.255.255.0,24h # IP range and lease time
+dhcp-range={{ dhcp_range.start }},{{ dhcp_range.end }},{{ dhcp_range.mask }},{{ dhcp_range.lease_time }}
+
