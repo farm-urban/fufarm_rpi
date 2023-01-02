@@ -107,7 +107,7 @@
 ## Configure firewall with iptables
 - name: Install iptables rules
   template:
-    src: templates/rules.v4.j2
+    src: templates/iptables.v4.j2
     dest: /etc/iptables/rules.v4
 
 # This will load a state from a file, with a rollback in case of access loss
