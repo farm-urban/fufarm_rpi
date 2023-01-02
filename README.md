@@ -39,6 +39,9 @@ Defaults env_keep += "EDITOR"
 4. For manipulating network addresses
 `python3 -m pip install netaddr`
 
+### Run Ansible
+`ansible-playbook --syntax-check  -i inventory.yml  ap-client.yml `
+
 
 ### References:
 * Offical guide to set up AP
