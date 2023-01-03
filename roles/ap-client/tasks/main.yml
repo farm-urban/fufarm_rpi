@@ -33,27 +33,11 @@
 #
 # Wireless interfaces
 #
-# Create wifi_ap_interface
-# This doesn't seem to come up without a reboot - not sure why
-- name: Create udev file for ap interface
-  ansible.builtin.copy:
-    dest: /etc/udev/rules.d/90-wireless.rules
-    content: |
-      interface {{ wifi_ap_interface }}
-          #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
-          nohook wpa_supplicant
-      ACTION=="add", SUBSYSTEM=="ieee80211", KERNEL=="phy0", RUN+="/sbin/iw phy %k interface add {{ wifi_ap_interface }} type __ap"
-      
-      #JMHT _ COULD ADD MAC ADDRESS e.g
-      # SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="${MAC_ADDRESS}", KERNEL=="phy0", \
-      # RUN+="/sbin/iw phy phy0 interface add ap0 type __ap", \
-      #  RUN+="/bin/ip link set ap0 address ${MAC_ADDRESS}
-
+# Create wifi_ap_interface - maybe should do this in dhcpcd.conf?
 - name: Configure ap interface
   ansible.builtin.template:
     src: templates/ap.j2
     dest: /etc/network/interfaces.d/ap
-
 
 ## For now we assume that the wifi client has been set up
 ## look at /usr/bin/raspi-config - it seems to use wpa_cli to set everything up
@@ -94,6 +78,7 @@
     src: templates/hostapd.conf.j2
     dest: /etc/hostapd/hostapd.conf
 
+  # Not required as hostapd installed by default now
   # - name: Creating hostapd deamon file
   #   copy:
   #     dest: "/your path"
@@ -109,6 +94,18 @@
           #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
           nohook wpa_supplicant
 
+- name: Create ap start script
+  template:
+    src: templates/ap.service.j2
+    dest: /etc/systemd/system/ap.service
+
+- name: Start ap and enable for boot
+  ansible.builtin.systemd:
+    name: ap.service
+    state: started
+    enabled: yes
+    masked: no
+    daemon_reload: yes
 
 # Firewall configuration
 ## rpi docs recommend: /etc/sysctl.d/routed-ap.conf
@@ -135,3 +132,6 @@
   poll: 0
   notify:
     - Restart network # Do this at end rather then restarting each individual service
+
+- name: Start tailscale and connect to exit node
+  command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true

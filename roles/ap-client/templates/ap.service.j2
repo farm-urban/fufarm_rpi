@@ -1,0 +1,14 @@
+[Unit]
+Description=accesspoint with hostapd
+#Wants=wpa_supplicant@%i.service
+Wants=wpa_supplicant.service
+
+[Service]
+ExecStartPre=/sbin/iw phy phy0 interface add {{ wifi_ap_interface }} type __ap
+ExecStartPre=/bin/ip link set {{ wifi_ap_interface }} address {{ wifi_ap_mac_address }}
+ExecStart=/usr/sbin/hostapd -i {{ wifi_ap_interface }} /etc/hostapd/hostapd.conf
+ExecStopPost=-/sbin/iw dev {{ wifi_ap_interface }} del
+
+[Install]
+WantedBy=multi-user.target
+#WantedBy=sys-subsystem-net-devices-%i.device

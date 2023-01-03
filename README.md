@@ -69,20 +69,20 @@ sudo apt-get install tailscale
   https://github.com/jsphpl/ansible-raspi-accesspoint
 
 
-## Replace udev with file that creates interface on startup
-systemctl edit --force --full accesspoint@.service
+ExecStart=/usr/bin/tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true
 
-[Unit]
-Description=accesspoint with hostapd (interface-specific version)
-Wants=wpa_supplicant@%i.service
 
-[Service]
-ExecStartPre=/sbin/iw dev %i interface add ap@%i type __ap
-ExecStart=/usr/sbin/hostapd -i ap@%i /etc/hostapd/hostapd.conf
-ExecStopPost=-/sbin/iw dev ap@%i del
+## Disable all sound
+sudo apt-purge pulseaudio
+sudo apt-get purge pipewire
+sudo apt-get autoremove
+cat > /etc/modprobe.d/alsa-blacklist.conf <<EOF
+blacklist snd_bcm2835
+EOF
 
-[Install]
-WantedBy=sys-subsystem-net-devices-%i.device
+Edit: /boot/config.txt
+dtoverlay=vc4-kms-v3d -> dtoverlay=vc4-kms-v3d,noaudio
+dtparam=audio=on -> dtparam=audio=of
 
 
 
