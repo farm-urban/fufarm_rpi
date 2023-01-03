@@ -42,6 +42,19 @@ Defaults env_keep += "EDITOR"
 ### Run Ansible
 `ansible-playbook --syntax-check  -i inventory.yml  ap-client.yml `
 
+### To Activate tailsale
+1. Install
+```
+sudo apt-get install apt-transport-https
+curl -fsSL https://pkgs.tailscale.com/stable/raspbian/bullseye.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg > /dev/null
+curl -fsSL https://pkgs.tailscale.com/stable/raspbian/bullseye.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
+sudo apt-get update
+sudo apt-get install tailscale
+```
+
+2. Login and use exit node
+`sudo tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true`
+
 
 ### References:
 * Offical guide to set up AP

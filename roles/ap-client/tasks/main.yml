@@ -135,4 +135,3 @@
   poll: 0
   notify:
     - Restart network # Do this at end rather then restarting each individual service
-

@@ -81,6 +81,8 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [956:70797]
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
+# For tailscale
+-A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
 COMMIT
 
 *filter
@@ -89,4 +91,7 @@ COMMIT
 :OUTPUT ACCEPT [12:872]
 -A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+# For tailscale
+-A FORWARD -i {{ tailscale_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ tailscale_interface }} -j ACCEPT
 COMMIT

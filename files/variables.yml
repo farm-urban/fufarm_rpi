@@ -5,6 +5,7 @@ channel: 6
 lan_adapter: eth0
 wifi_client_interface: wlan0
 wifi_ap_interface: uap0
+tailscale_interface: tailscale0
 
 wifi_ap_address: 192.168.4.1
 dhcp_range:
