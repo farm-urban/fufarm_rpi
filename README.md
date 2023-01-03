@@ -59,10 +59,31 @@ sudo apt-get install tailscale
 ### References:
 * Offical guide to set up AP
    https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-routed-wireless-access-point
+* Discussion on proper way to set up bridge
+   https://raspberrypi.stackexchange.com/questions/89803/access-point-as-wifi-router-repeater-optional-with-bridge
+* Good general discussion on networking on Rpi:
+  https://raspberrypi.stackexchange.com/questions/37920/how-do-i-set-up-networking-wifi-static-ip-address-on-raspbian-raspberry-pi-os/37921#37921
 * primer on debugging network issues:
    https://www.redhat.com/sysadmin/beginners-guide-network-troubleshooting-linux
 * Ansible project to create an rpi AP
   https://github.com/jsphpl/ansible-raspi-accesspoint
+
+
+## Replace udev with file that creates interface on startup
+systemctl edit --force --full accesspoint@.service
+
+[Unit]
+Description=accesspoint with hostapd (interface-specific version)
+Wants=wpa_supplicant@%i.service
+
+[Service]
+ExecStartPre=/sbin/iw dev %i interface add ap@%i type __ap
+ExecStart=/usr/sbin/hostapd -i ap@%i /etc/hostapd/hostapd.conf
+ExecStopPost=-/sbin/iw dev ap@%i del
+
+[Install]
+WantedBy=sys-subsystem-net-devices-%i.device
+
 
 
 
