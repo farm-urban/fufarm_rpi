@@ -70,15 +70,18 @@ sudo apt-get install tailscale
 
 
 ## Disable all sound
+```
 sudo apt-purge pulseaudio
 sudo apt-get purge pipewire
 sudo apt-get autoremove
 cat > /etc/modprobe.d/alsa-blacklist.conf <<EOF
 blacklist snd_bcm2835
 EOF
-
+```
 Edit: /boot/config.txt
+
 dtoverlay=vc4-kms-v3d -> dtoverlay=vc4-kms-v3d,noaudio
+
 dtparam=audio=on -> dtparam=audio=of
 
 

@@ -18,12 +18,6 @@
     state: present
   when: ansible_facts.wlan0.active # Could just ignore errors?
 
-- name: Enable and unmask hostapd
-  ansible.builtin.systemd:
-    name: hostapd
-    enabled: yes
-    masked: no
-
 - name: Enable and unmask dnsmasq
   ansible.builtin.systemd:
     name: dnsmasq
@@ -73,6 +67,7 @@
     src: templates/dnsmasq.conf.j2
     dest: /etc/dnsmasq.conf
 
+# This won't be started as a service as we start it with ap.service
 - name: Configure hostapd
   ansible.builtin.template:
     src: templates/hostapd.conf.j2
@@ -94,7 +89,7 @@
           #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
           nohook wpa_supplicant
 
-- name: Create ap start script
+- name: Create ap.service script
   template:
     src: templates/ap.service.j2
     dest: /etc/systemd/system/ap.service
