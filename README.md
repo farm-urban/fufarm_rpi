@@ -69,9 +69,6 @@ sudo apt-get install tailscale
   https://github.com/jsphpl/ansible-raspi-accesspoint
 
 
-ExecStart=/usr/bin/tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true
-
-
 ## Disable all sound
 sudo apt-purge pulseaudio
 sudo apt-get purge pipewire
