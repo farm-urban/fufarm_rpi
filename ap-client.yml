@@ -6,6 +6,7 @@
   vars_files:
     - files/variables.yml
   roles:
+    # - rpi-setup
     - ap-client
   # tasks:
   # - name: Print the gateway for each host when defined

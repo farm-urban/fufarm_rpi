@@ -1,0 +1,40 @@
+---
+- name: Update APT
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Remove uneeded software packages
+  ansible.builtin.apt:
+    cache_valid_time: 300 # 5 minutes
+    pkg:
+      - pulseaudio
+      - pipewire
+    state: absent
+    purge: true
+  when: ansible_facts.wlan0.active # Could just ignore errors?
+
+- name: Blacklist the snd_bcm2835 sound driver module
+  community.general.kernel_blacklist:
+    name: snd_bcm2835
+    state: present
+
+# Turn off sound options
+- name: Turn off sound
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    regexp: '^dtparam=audio=on'
+    line: dtparam=audio=off
+
+- name: Remove hdmi sound
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    regexp: '^dtoverlay=vc4-kms-v3d'
+    line: dtoverlay=vc4-kms-v3d,noaudio
+
+- name: Clean up APT
+  apt:
+    autoremove: yes
+    autoclean: yes
+
+# Need to reboot here as there could be a kernel upgrade
