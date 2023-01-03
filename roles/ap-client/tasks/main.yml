@@ -16,6 +16,7 @@
       - hostapd
       - iptables-persistent  # auto-loads iptables rules on boot
     state: present
+  when: ansible_facts.wlan0.active # Could just ignore errors?
 
 - name: Enable and unmask hostapd
   ansible.builtin.systemd:
@@ -35,9 +36,18 @@
 # Create wifi_ap_interface
 # This doesn't seem to come up without a reboot - not sure why
 - name: Create udev file for ap interface
-  ansible.builtin.template:
-    src: templates/90-wireless.rules.j2
+  ansible.builtin.copy:
     dest: /etc/udev/rules.d/90-wireless.rules
+    content: |
+      interface {{ wifi_ap_interface }}
+          #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
+          nohook wpa_supplicant
+      ACTION=="add", SUBSYSTEM=="ieee80211", KERNEL=="phy0", RUN+="/sbin/iw phy %k interface add {{ wifi_ap_interface }} type __ap"
+      
+      #JMHT _ COULD ADD MAC ADDRESS e.g
+      # SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="${MAC_ADDRESS}", KERNEL=="phy0", \
+      # RUN+="/sbin/iw phy phy0 interface add ap0 type __ap", \
+      #  RUN+="/bin/ip link set ap0 address ${MAC_ADDRESS}
 
 - name: Configure ap interface
   ansible.builtin.template:
@@ -66,6 +76,12 @@
 #   notify:
 #   - reload wpa_supplicant
 
+- name: create wireless interface file
+  template:
+    src: templates/wpa_supplicant.conf.j2
+    dest: /etc/wpa_supplicant/wpa_supplicant.conf
+  notify:
+  - Reload wpa_supplicant
 
 # Access point configuration
 - name: Configure dnsmasq

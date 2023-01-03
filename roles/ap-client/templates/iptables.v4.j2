@@ -83,11 +83,10 @@ COMMIT
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
 COMMIT
 
-# Looks like below not required - from https://github.com/jsphpl/ansible-raspi-accesspoint
-#*filter
-#:INPUT ACCEPT [132:8265]
-#:FORWARD ACCEPT [0:0]
-#:OUTPUT ACCEPT [12:872]
-#-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
-#-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
-#COMMIT
+*filter
+:INPUT ACCEPT [132:8265]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [12:872]
+-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+COMMIT

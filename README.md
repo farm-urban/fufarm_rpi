@@ -48,6 +48,8 @@ Defaults env_keep += "EDITOR"
    https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-routed-wireless-access-point
 * primer on debugging network issues:
    https://www.redhat.com/sysadmin/beginners-guide-network-troubleshooting-linux
+* Ansible project to create an rpi AP
+  https://github.com/jsphpl/ansible-raspi-accesspoint
 
 
 
