@@ -43,15 +43,7 @@ Defaults env_keep += "EDITOR"
 `ansible-playbook --syntax-check  -i inventory.yml  ap-client.yml `
 
 ### To Activate tailsale
-1. Install
-```
-sudo apt-get install apt-transport-https
-curl -fsSL https://pkgs.tailscale.com/stable/raspbian/bullseye.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg > /dev/null
-curl -fsSL https://pkgs.tailscale.com/stable/raspbian/bullseye.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
-sudo apt-get update
-sudo apt-get install tailscale
-```
-
+1. Installs with playbook.
 2. Login and use exit node
 `sudo tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true`
 
@@ -68,52 +60,3 @@ sudo apt-get install tailscale
 * Ansible project to create an rpi AP
   https://github.com/jsphpl/ansible-raspi-accesspoint
 
-
-### Configure bridge for eth0
-https://wiki.archlinux.org/title/Network_bridge
-```
-# Create virtual uap0 interface
-sudo /sbin/iw phy phy0 interface add uap0 type __ap
-sudo /bin/ip link set uap0 address 02:68:b3:29:da:98
-sudo ip link set dev uap0 up
-
-# Create bridge
-sudo ip link add name ap_bridge type bridge
-sudo ip link set dev ap_bridge up
-# To add an interface (e.g. eth0) into the bridge, its state must be up:
-sudo ip link set eth0 up
-# Adding the interface into the bridge is done by setting its master to bridge_name:
-sudo ip link set eth0 master ap_bridge
-sudo ip link set uap0 master ap_bridge
-
-```
-
-
-
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
-192.168.4.0     0.0.0.0         255.255.255.0   U     202    0        0 eth0
-192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
-
-
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
-192.168.4.0     0.0.0.0         255.255.255.0   U     0      0        0 uap0
-192.168.4.0     0.0.0.0         255.255.255.0   U     202    0        0 eth0
-192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
-
-
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
-192.168.4.0     0.0.0.0         255.255.255.0   U     0      0        0 uap0
-192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
-
-
-sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE  
-sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT  
-sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT 
-sudo iptables -A FORWARD -i wlan0 -o uap0 -m state --state RELATED,ESTABLISHED -j ACCEPT  
-sudo iptables -A FORWARD -i uap0 -o wlan0 -j ACCEPT 
