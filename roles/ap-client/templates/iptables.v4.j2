@@ -25,23 +25,6 @@
 -A FORWARD -m state --state INVALID -j DROP
 -A OUTPUT -m state --state INVALID -j DROP
 
-# DROP RFC1918 PACKETS
-#-A INPUT -s 10.0.0.0/8 -j DROP
-#-A INPUT -s 172.16.0.0/12 -j DROP
-#-A INPUT -s 192.168.0.0/16 -j DROP
-
-# DROP SPOOFED PACKETS
--A INPUT -s 169.254.0.0/16 -j DROP
--A INPUT -s 127.0.0.0/8 -j DROP
--A INPUT -s 224.0.0.0/4 -j DROP
--A INPUT -d 224.0.0.0/4 -j DROP
--A INPUT -s 240.0.0.0/5 -j DROP
--A INPUT -d 240.0.0.0/5 -j DROP
--A INPUT -s 0.0.0.0/8 -j DROP
--A INPUT -d 0.0.0.0/8 -j DROP
--A INPUT -d 239.255.255.0/24 -j DROP
--A INPUT -d 255.255.255.255 -j DROP
-
 # ICMP SMURF ATTACKS + RATE LIMIT THE REST
 -A INPUT -p icmp --icmp-type address-mask-request -j DROP
 -A INPUT -p icmp --icmp-type timestamp-request -j DROP
@@ -58,13 +41,22 @@
 # ALLOW ESTABLISHED CONNECTIONS
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Port forwarding for AP 
--A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -j ACCEPT
+# Port forwarding
+# ETH
+-A FORWARD -i {{ wifi_client_interface }} -o {{ eth_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ eth_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+# AP
+-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+# For tailscale
+-A FORWARD -i {{ tailscale_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ tailscale_interface }} -j ACCEPT
 
-# DHCP and DNS for AP
+# DHCP and DNS for AP and ETH
 -A INPUT -p udp --sport 67:68 -i {{ wifi_ap_interface }} -j ACCEPT
 -A INPUT -p udp --dport 53 -i {{ wifi_ap_interface }} -j ACCEPT
+-A INPUT -p udp --sport 67:68 -i {{ eth_interface }} -j ACCEPT
+-A INPUT -p udp --dport 53 -i {{ eth_interface }} -j ACCEPT
 
 # For Debugging
 #-N LOGGING
@@ -79,19 +71,10 @@ COMMIT
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
-:POSTROUTING ACCEPT [956:70797]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
 # For tailscale
+-A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
-COMMIT
-
-*filter
-:INPUT ACCEPT [132:8265]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [12:872]
--A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
-# For tailscale
--A FORWARD -i {{ tailscale_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i {{ wifi_ap_interface }} -o {{ tailscale_interface }} -j ACCEPT
 COMMIT

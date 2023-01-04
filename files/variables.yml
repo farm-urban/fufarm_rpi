@@ -2,17 +2,23 @@ ssid: FUsensors
 ap_password: 12345678
 channel: 6
 
-lan_adapter: eth0
+eth_interface: eth0
 wifi_client_interface: wlan0
 wifi_ap_interface: uap0
 tailscale_interface: tailscale0
 
-wifi_ap_address: 192.168.4.1
+eth_interface_address: 192.168.4.1
+wifi_ap_address: 192.168.5.1
 # Mac Address from: $(echo $FQDN|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
 wifi_ap_mac_address: 02:68:b3:29:da:98
-dhcp_range:
+eth_dhcp_range:
   start: 192.168.4.100
   end: 192.168.4.200
+  mask: 255.255.255.0
+  lease_time: 24h
+ap_dhcp_range:
+  start: 192.168.5.100
+  end: 192.168.5.200
   mask: 255.255.255.0
   lease_time: 24h
 dns_server: 8.8.8.8

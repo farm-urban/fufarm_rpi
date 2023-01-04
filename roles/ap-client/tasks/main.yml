@@ -85,6 +85,10 @@
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
     block: |
+      # noarp to speed things up: https://wiki.archlinux.org/title/dhcpcd#Speed_up_DHCP_by_disabling_ARP_probing
+      noarp
+      interface {{ eth_interface }}
+          static ip_address={{ eth_interface_address }}/24
       interface {{ wifi_ap_interface }}
           #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
           nohook wpa_supplicant
@@ -128,5 +132,5 @@
   notify:
     - Restart network # Do this at end rather then restarting each individual service
 
-- name: Start tailscale and connect to exit node
-  command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true
+# - name: Start tailscale and connect to exit node
+#   command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true

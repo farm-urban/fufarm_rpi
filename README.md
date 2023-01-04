@@ -90,5 +90,30 @@ sudo ip link set uap0 master ap_bridge
 
 
 
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
+192.168.4.0     0.0.0.0         255.255.255.0   U     202    0        0 eth0
+192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
 
 
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
+192.168.4.0     0.0.0.0         255.255.255.0   U     0      0        0 uap0
+192.168.4.0     0.0.0.0         255.255.255.0   U     202    0        0 eth0
+192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
+
+
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.161.1   0.0.0.0         UG    303    0        0 wlan0
+192.168.4.0     0.0.0.0         255.255.255.0   U     0      0        0 uap0
+192.168.161.0   0.0.0.0         255.255.255.0   U     303    0        0 wlan0
+
+
+sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE  
+sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT  
+sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT 
+sudo iptables -A FORWARD -i wlan0 -o uap0 -m state --state RELATED,ESTABLISHED -j ACCEPT  
+sudo iptables -A FORWARD -i uap0 -o wlan0 -j ACCEPT 
