@@ -40,7 +40,9 @@ Defaults env_keep += "EDITOR"
 `python3 -m pip install netaddr`
 
 ### Run Ansible
-`ansible-playbook --syntax-check  -i inventory.yml  ap-client.yml `
+1. Edit file `ap-client.yml` in main directory  to set any variables (e.g. tailscale)
+2. Execute with:
+  `ansible-playbook -i inventory.yml  ap-client.yml `
 
 ### To Activate tailsale
 1. Installs with playbook.
