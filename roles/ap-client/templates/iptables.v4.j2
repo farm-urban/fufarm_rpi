@@ -48,9 +48,11 @@
 # AP
 -A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
-# For tailscale
+{% if tailscale %}
 -A FORWARD -i {{ tailscale_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A FORWARD -i {{ wifi_ap_interface }} -o {{ tailscale_interface }} -j ACCEPT
+{% endif %}
+
 
 # DHCP and DNS for AP and ETH
 -A INPUT -p udp --sport 67:68 -i {{ wifi_ap_interface }} -j ACCEPT
@@ -74,7 +76,8 @@ COMMIT
 :POSTROUTING ACCEPT [0:0]
 -A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
-# For tailscale
+{% if tailscale %}
 -A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
 -A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
+{% endif %}
 COMMIT

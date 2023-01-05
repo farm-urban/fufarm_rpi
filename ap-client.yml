@@ -2,14 +2,20 @@
 - name: Setup access-point/client
   hosts: local
   remote_user: pi
-  become: yes # remote_user and/or become?
-  vars_files:
-    - files/variables.yml
-  roles:
+  become: yes
+  # gather_facts: no
+  # roles:
     # - rpi-setup
-    - ap-client
-  # tasks:
+    # - ap-client
+    # - tailscale-setup
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: ap-client
+      vars:
+        external_wifi: true
+        tailscale: true
+
   # - name: Print the gateway for each host when defined
   #   ansible.builtin.debug:
   #     msg: ansible_distribution_release {{ ansible_distribution_release }}
-

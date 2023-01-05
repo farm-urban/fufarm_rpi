@@ -1,0 +1,24 @@
+#
+# Setup tailscale
+#
+- name: Get GPG key
+  ansible.builtin.get_url:
+    url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.noarmor.gpg
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+- name: Add repository
+  ansible.builtin.get_url:
+    url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.tailscale-keyring.list
+    dest: /etc/apt/sources.list.d/tailscale.list
+
+- name: Install tailscale
+  ansible.builtin.apt:
+    update_cache: true
+    pkg: tailscale
+    state: present
+
+- name: Enable and unmask tailscale
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: yes
+    masked: no

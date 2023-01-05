@@ -1,15 +1,7 @@
 ---
-# - name: Clean up APT
-#   apt:
-#     update_cache: yes
-#     upgrade: dist
-#     autoremove: yes
-#     autoclean: yes
-#   become: yes
-
 - name: Install required software packages
   ansible.builtin.apt:
-    cache_valid_time: 300 # 5 minutes
+    cache_valid_time: 300 # time in seconds => 5 minutes
     pkg:
       #- dhcpcd # Present by default
       - dnsmasq
@@ -23,6 +15,13 @@
     name: dnsmasq
     enabled: yes
     masked: no
+
+- name: Enable and unmask hostapd
+  ansible.builtin.systemd:
+    name: hostapd
+    enabled: yes
+    masked: no
+  when: external_wifi
 
 #
 # Wireless interfaces
@@ -73,14 +72,6 @@
     src: templates/hostapd.conf.j2
     dest: /etc/hostapd/hostapd.conf
 
-  # Not required as hostapd installed by default now
-  # - name: Creating hostapd deamon file
-  #   copy:
-  #     dest: "/your path"
-  #     content: |
-  #       # {{ ansible_managed }}
-  #       DAEMON_CONF="/etc/hostapd/hostapd.conf"
-
 - name: Configure dhcpcd
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
@@ -90,13 +81,14 @@
       interface {{ eth_interface }}
           static ip_address={{ eth_interface_address }}/24
       interface {{ wifi_ap_interface }}
-          #static ip_address={{ wifi_ap_address }}/24 # Not required currently as we use the interface file
+          static ip_address={{ wifi_ap_address }}/24
           nohook wpa_supplicant
 
 - name: Create ap.service script
   template:
     src: templates/ap.service.j2
     dest: /etc/systemd/system/ap.service
+  when: not external_wifi
 
 - name: Start ap and enable for boot
   ansible.builtin.systemd:
@@ -105,6 +97,7 @@
     enabled: yes
     masked: no
     daemon_reload: yes
+  when: not external_wifi
 
 # Firewall configuration
 ## rpi docs recommend: /etc/sysctl.d/routed-ap.conf
@@ -131,31 +124,7 @@
   poll: 0
   notify:
     - Restart network # Do this at end rather then restarting each individual service
-#
-# Setup tailscale
-#
-- name: Get GPG key
-  ansible.builtin.get_url:
-    url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.noarmor.gpg
-    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
 
-- name: Add repository
-  ansible.builtin.get_url:
-    url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.tailscale-keyring.list
-    dest: /etc/apt/sources.list.d/tailscale.list
-
-- name: Install tailscale
-  ansible.builtin.apt:
-    update_cache: true
-    pkg: tailscale
-    state: present
-
-- name: Enable and unmask tailscale
-  ansible.builtin.systemd:
-    name: tailscaled
-    enabled: yes
-    masked: no
-
-# Can't run below as need to login
-# - name: Start tailscale and connect to exit node
-#   command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true
+- name: Start tailscale and connect to exit node
+  command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true
+  when: tailscale

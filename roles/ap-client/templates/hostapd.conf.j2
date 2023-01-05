@@ -1,9 +1,11 @@
 # Set interface in ap.service systemd script
-# interface={{ wifi_ap_interface }}
+{% if external_wifi %}
+interface={{ wifi_ap_interface }}
+{% endif %}
 ssid={{ ssid }}
 hw_mode=g
 channel={{ channel }}
-#driver=nl80211
+driver=nl80211
 wmm_enabled=0
 macaddr_acl=0
 auth_algs=1

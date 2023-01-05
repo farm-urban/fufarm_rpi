@@ -60,3 +60,25 @@ Defaults env_keep += "EDITOR"
 * Ansible project to create an rpi AP
   https://github.com/jsphpl/ansible-raspi-accesspoint
 
+
+  ### Install driver for TP-Link ARcher T2U Plus
+  https://github.com/aircrack-ng/rtl8812au
+
+```
+sudo apt-get install raspberrypi-kernel-headers
+git clone -b v5.6.4.2 https://github.com/aircrack-ng/rtl8812au.git
+cd rtl*
+
+sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
+sed -i 's/CONFIG_PLATFORM_ARM64_RPI = n/CONFIG_PLATFORM_ARM64_RPI = y/g' Makefile
+
+export ARCH=arm
+sed -i 's/^MAKE="/MAKE="ARCH=arm\ /' dkms.conf
+
+make
+sudo make -n install
+```
+
+# install -p -m 644 88XXau.ko  /lib/modules/5.15.76-v7l+/kernel/drivers/net/wireless/
+# /sbin/depmod -a 5.15.76-v7l+
+
