@@ -59,6 +59,8 @@ Defaults env_keep += "EDITOR"
    https://www.redhat.com/sysadmin/beginners-guide-network-troubleshooting-linux
 * Ansible project to create an rpi AP
   https://github.com/jsphpl/ansible-raspi-accesspoint
+* See also RaspAP project
+  https://github.com/RaspAP/raspap-tools
 
 
   ### Install driver for TP-Link ARcher T2U Plus
