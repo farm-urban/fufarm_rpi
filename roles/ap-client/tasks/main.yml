@@ -10,19 +10,6 @@
     state: present
   when: ansible_facts.wlan0.active # Could just ignore errors?
 
-- name: Enable and unmask dnsmasq
-  ansible.builtin.systemd:
-    name: dnsmasq
-    enabled: yes
-    masked: no
-
-- name: Enable and unmask hostapd
-  ansible.builtin.systemd:
-    name: hostapd
-    enabled: yes
-    masked: no
-  when: external_wifi
-
 #
 # Wireless interfaces
 #
@@ -60,18 +47,6 @@
   notify:
   - Reload wpa_supplicant
 
-# Access point configuration
-- name: Configure dnsmasq
-  ansible.builtin.template:
-    src: templates/dnsmasq.conf.j2
-    dest: /etc/dnsmasq.conf
-
-# This won't be started as a service as we start it with ap.service
-- name: Configure hostapd
-  ansible.builtin.template:
-    src: templates/hostapd.conf.j2
-    dest: /etc/hostapd/hostapd.conf
-
 - name: Configure dhcpcd
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
@@ -99,6 +74,17 @@
     daemon_reload: yes
   when: not external_wifi
 
+# Access point configuration
+- name: Configure dnsmasq
+  ansible.builtin.template:
+    src: templates/dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+
+- name: Configure hostapd
+  ansible.builtin.template:
+    src: templates/hostapd.conf.j2
+    dest: /etc/hostapd/hostapd.conf
+
 # Firewall configuration
 ## rpi docs recommend: /etc/sysctl.d/routed-ap.conf
 - name: Enable IP forwarding
@@ -125,7 +111,19 @@
   # notify:
   #   - Restart network # Do this at end rather then restarting each individual service
 
+- name: Enable and unmask dnsmasq
+  ansible.builtin.systemd:
+    name: dnsmasq
+    enabled: yes
+    masked: no
 
+# Only in case of external wifi as other we use the ap.service script
+- name: Enable and unmask hostapd
+  ansible.builtin.systemd:
+    name: hostapd
+    enabled: yes
+    masked: no
+  when: external_wifi
 
 # Scripts to login to tailscale on reboot
 - name: Create tailscale-start.service script
@@ -136,7 +134,7 @@
 
 - name: Enable and unmask tailscale-start
   ansible.builtin.systemd:
-    name: hostapd
+    name: tailscale-start
     enabled: yes
     masked: no
     state: started
