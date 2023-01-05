@@ -1,0 +1,21 @@
+---
+- block:
+  - name: Get top level directory
+    set_fact:
+      gitdir: /home/{{ ansible_user }}/rtl8812au
+  - name: Git checkout
+    ansible.builtin.git:
+      repo: 'https://github.com/aircrack-ng/rtl8812au'
+      dest: gitdir
+  - name: Unset I386
+    ansible.builtin.lineinfile:
+      path: {{ gitdir }}/Makefile
+      regexp: '^CONFIG_PLATFORM_I386_PC = y'
+      line: 'CONFIG_PLATFORM_I386_PC = n'
+  - name: Set ARM64
+    ansible.builtin.lineinfile:
+      path: {{ gitdir }}/Makefile
+      regexp: '^CONFIG_PLATFORM_ARM64_RPI = n'
+      line: 'CONFIG_PLATFORM_ARM64_RPI = y'
+      
+  become: false

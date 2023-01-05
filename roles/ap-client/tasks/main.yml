@@ -122,9 +122,23 @@
     path: /etc/iptables/rules.v4
   async: "{{ ansible_timeout }}"
   poll: 0
-  notify:
-    - Restart network # Do this at end rather then restarting each individual service
+  # notify:
+  #   - Restart network # Do this at end rather then restarting each individual service
 
-- name: Start tailscale and connect to exit node
-  command: /usr/bin/tailscale up --exit-node={{ tailscale_exit_node }}  --exit-node-allow-lan-access=true
+
+
+# Scripts to login to tailscale on reboot
+- name: Create tailscale-start.service script
+  template:
+    src: templates/tailscale-start.service.j2
+    dest: /etc/systemd/system/tailscale-start.service
   when: tailscale
+
+- name: Enable and unmask tailscale-start
+  ansible.builtin.systemd:
+    name: hostapd
+    enabled: yes
+    masked: no
+    state: started
+  when: tailscale
+

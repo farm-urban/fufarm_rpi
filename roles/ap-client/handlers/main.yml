@@ -1,12 +1,12 @@
 ---
 # None of these seem to do anything to get the interfaces up - need to reboot for now.
-- name: Restart network
-  service:
-    name: networking
-    state: restarted
+# - name: Restart network
+#   service:
+#     name: networking
+#     state: restarted
 
-- name: Reload wpa_supplicant
-  ansible.builtin.systemd:
-    name: wpa_supplicant
-    daemon_reload: yes
-    state: reloaded
+# - name: Reload wpa_supplicant
+#   ansible.builtin.systemd:
+#     name: wpa_supplicant
+#     daemon_reload: yes
+#     state: reloaded

@@ -8,7 +8,6 @@
     # - rpi-setup
     # - ap-client
     # - tailscale-setup
-
   tasks:
     - ansible.builtin.import_role:
         name: ap-client
