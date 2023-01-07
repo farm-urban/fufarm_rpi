@@ -1,0 +1,27 @@
+---
+- name: Create directory for checkout owned by the local user
+  ansible.builtin.file: 
+    path: "{{ git_dir }}"
+    owner: "{{ ansible_user }}"
+    state: directory
+
+- name: Git checkout
+  ansible.builtin.git:
+    repo: 'git@github.com:linucks/fu_sensors.git'
+    dest: "{{ git_dir }}"
+    accept_hostkey: yes
+  become: false
+
+# - name: Install virtualenv via pip
+#   ansible.builtin.pip:
+#     name: virtualenv
+#     executable: pip3
+
+- name: Install required python packages
+  ansible.builtin.pip:
+    name:
+      - paho-mqtt
+      - requests
+    virtualenv: "{{git_dir }}/py_venv"
+    virtualenv_site_packages: yes
+  become: false

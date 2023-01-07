@@ -1,7 +1,7 @@
 # Set up a usb webcam
 ---
 - name: Create motion log directory
-  file:
+  ansible.builtin.file:
     path: /var/log/motion
     owner: motion
     state: directory
@@ -15,7 +15,7 @@
   when: ansible_facts.wlan0.active # Could just ignore errors?
 
 - name: Create motion conf directory
-  file:
+  ansible.builtin.file:
     path: "{{ motion_conf_dir }}"
     owner: motion
     state: directory

@@ -5,18 +5,19 @@
   become: yes
   # gather_facts: no
   roles:
-    - rpi-setup
-    - tailscale-install
+    # - rpi-setup
+    # - tailscale-install
     # - webcam
-  post_tasks:
-    # Seems to be the only way to set variables conditionally as set_fact
-    # doesn't respect tags
-    - ansible.builtin.import_role:
-        name: ap-client
-      vars:
-        access_point: false
-        external_wifi: false
-        tailscale: true
+    - fu-sensors
+  # post_tasks:
+  #   # Seems to be the only way to set variables conditionally as set_fact
+  #   # doesn't respect tags
+  #   - ansible.builtin.import_role:
+  #       name: ap-client
+  #     vars:
+  #       access_point: false
+  #       external_wifi: false
+  #       tailscale: true
 
   # - name: Print the gateway for each host when defined
   #   ansible.builtin.debug:
