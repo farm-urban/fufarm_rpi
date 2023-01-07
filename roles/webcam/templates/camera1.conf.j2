@@ -1,6 +1,7 @@
 camera_id = 1
 videodevice {{ cam1_path }}
-v4l2_palette 15
+#v4l2_palette 15
+#video_params Gain=50, Saturation=64, Brightness=50
 
 width 320
 height 240
@@ -14,3 +15,40 @@ stream_port {{ stream_port1 }}
 framerate 5
 # Maximum framerate for stream streams (default: 1)
 stream_maxrate 3
+
+
+# Trust Webcam
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:46] vid_start: Opening V4L2 device
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:46] v4l2_device_open: Using videodevice /dev/v4l/by-id/usb-Trust_Webcam_Trust_Webcam_Trust_Webcam-video-index0 and input -1
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_device_capability: - VIDEO_CAPTURE
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_device_capability: - STREAMING
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_input_select: Name = "Camera 1"- CAMERA
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_norm_select: Device does not support specifying PAL/NTSC norm
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_pixfmt_set: Testing palette YUYV (320x240)
+# [1:ml1] [NTC] [VID] [Jan 07 11:39:47] v4l2_pixfmt_set: Using palette YUYV (320x240)
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_fps_set: Trying to set fps to 5
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_fps_set: Device set fps to 5
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ---------Controls---------
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   V4L2 ID   Name and Range
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963776 Brightness, -64 to 64
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963777 Contrast, 0 to 64
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963778 Saturation, 0 to 128
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963779 Hue, -40 to 40
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963788 White Balance Temperature, Auto, 0 to 1
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963792 Gamma, 72 to 500
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963795 Gain, 0 to 100
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963800 Power Line Frequency, 0 to 2
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   menu item: Value 0 Disabled
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   menu item: Value 1 50 Hz
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   menu item: Value 2 60 Hz
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963802 White Balance Temperature, 2800 to 6500
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963803 Sharpness, 0 to 6
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID09963804 Backlight Compensation, 0 to 2
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID10094849 Exposure, Auto, 0 to 3
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   menu item: Value 1 Manual Mode
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list:   menu item: Value 3 Aperture Priority Mode
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID10094850 Exposure (Absolute), 1 to 5000
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: ID10094851 Exposure, Auto Priority, 0 to 1
+# [1:ml1] [INF] [VID] [Jan 07 11:39:47] v4l2_ctrls_list: --------------------------
+# [1:ml1] [NTC] [ALL] [Jan 07 11:39:47] image_ring_resize: Resizing pre_capture buffer to 1 items
+# [1:ml1] [NTC] [ALL] [Jan 07 11:39:49] image_ring_resize: Resizing pre_capture buffer to 4 items
