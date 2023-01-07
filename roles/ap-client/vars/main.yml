@@ -1,9 +1,10 @@
 external_wifi: false # default is to create a virtual wifi interface uap0
+access_point: true
 tailscale: false
 
-ssid: FUsensors
+ap_ssid: FUsensors
 ap_password: 12345678
-channel: 6
+ap_channel: 6
 
 eth_interface: eth0
 wifi_client_interface: wlan0

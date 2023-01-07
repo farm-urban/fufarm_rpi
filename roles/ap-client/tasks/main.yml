@@ -1,14 +1,20 @@
 ---
-- name: Install required software packages
+- name: Install shared software packages
   ansible.builtin.apt:
     cache_valid_time: 300 # time in seconds => 5 minutes
     pkg:
-      #- dhcpcd # Present by default
       - dnsmasq
-      - hostapd
       - iptables-persistent  # auto-loads iptables rules on boot
     state: present
   when: ansible_facts.wlan0.active # Could just ignore errors?
+
+- name: Install hostapd
+  ansible.builtin.apt:
+    cache_valid_time: 300 # time in seconds => 5 minutes
+    pkg:
+      - hostapd
+    state: present
+  when: ansible_facts.wlan0.active and access_point
 
 #
 # Wireless interfaces
@@ -18,8 +24,10 @@
   ansible.builtin.template:
     src: templates/ap.j2
     dest: /etc/network/interfaces.d/ap
+  when: access_point
 
-## For now we assume that the wifi client has been set up
+## For now we assume that the wifi client has been set up by copying
+## wpa_client.conf into boot directory
 ## look at /usr/bin/raspi-config - it seems to use wpa_cli to set everything up
 # Set up wifi_client_interface configuration
 # - name: Backup wpa_supplicant.conf file prior to deletion
@@ -40,14 +48,14 @@
 #   notify:
 #   - reload wpa_supplicant
 
-- name: create wireless interface file
-  template:
-    src: templates/wpa_supplicant.conf.j2
-    dest: /etc/wpa_supplicant/wpa_supplicant.conf
-  notify:
-  - Reload wpa_supplicant
+# - name: Copy over wpa_supplicant.conf file
+#   copy:
+#     src: files/wpa_supplicant.conf
+#     dest: /etc/wpa_supplicant/wpa_supplicant.conf
+#   notify:
+#   - Reload wpa_supplicant
 
-- name: Configure dhcpcd
+- name: Configure dhcpcd for eth0
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
     block: |
@@ -55,15 +63,21 @@
       noarp
       interface {{ eth_interface }}
           static ip_address={{ eth_interface_address }}/24
+
+- name: Configure dhcpcd for access point
+  ansible.builtin.blockinfile:
+    path: /etc/dhcpcd.conf
+    block: |
       interface {{ wifi_ap_interface }}
           static ip_address={{ wifi_ap_address }}/24
           nohook wpa_supplicant
+  when: access_point
 
 - name: Create ap.service script
   template:
     src: templates/ap.service.j2
     dest: /etc/systemd/system/ap.service
-  when: not external_wifi
+  when: access_point and not external_wifi
 
 - name: Start ap and enable for boot
   ansible.builtin.systemd:
@@ -72,7 +86,7 @@
     enabled: yes
     masked: no
     daemon_reload: yes
-  when: not external_wifi
+  when: access_point and not external_wifi
 
 # Access point configuration
 - name: Configure dnsmasq
@@ -84,6 +98,7 @@
   ansible.builtin.template:
     src: templates/hostapd.conf.j2
     dest: /etc/hostapd/hostapd.conf
+  when: access_point
 
 # Firewall configuration
 ## rpi docs recommend: /etc/sysctl.d/routed-ap.conf
@@ -123,7 +138,7 @@
     name: hostapd
     enabled: yes
     masked: no
-  when: external_wifi
+  when: access_point and external_wifi
 
 # Scripts to login to tailscale on reboot
 - name: Create tailscale-start.service script

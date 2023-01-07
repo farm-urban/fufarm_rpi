@@ -1,0 +1,16 @@
+camera_id = 1
+videodevice {{ cam1_path }}
+v4l2_palette 15
+
+width 320
+height 240
+
+text_left CAMERA 1
+picture_filename CAM1_%v-%Y%m%d%H%M%S-%q
+
+stream_localhost off
+stream_port {{ stream_port1 }}
+
+framerate 5
+# Maximum framerate for stream streams (default: 1)
+stream_maxrate 3

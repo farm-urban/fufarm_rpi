@@ -3,20 +3,27 @@ Access point for a raspberry pi
 
 ## Setup
 1. Install raspberry pi imager from: https://www.raspberrypi.com/software/
-2. In advanced options, enable ssh and set authorized keys of your ssh public key (cat ~/.ssh/id_ed25519.pub)
-3. For ssh access from OSX, mount the freshly minted SD card and:
+2. In advanced options, enable ssh and set authorized keys of your ssh public key (cat ~/.ssh/id_ed25519.pub) and locale options.
+3. **NOT SURE IF STILL REQUIRED:** For ssh access from OSX, mount the freshly minted SD card and:
    * `touch ssh` NB: not needed if ssh was enabled in step 2.
    * Edit `config.txt` and append `dtoverlay=dwc2`
    * Edit `cmdline.txt` and after `rootwait` append the text `modules-load=dwc2,g_ether`
-4. Check ssh access with: `ssh pi@raspberrypi.local`
+4. Copy `roles/ap-client/files/wpa_supplicant.conf` into boot directory of flash card.
+   On osx: `cp /opt/rpi-accesspoint/roles/ap-client/files/wpa_supplicant.conf /Volumes/boot/`
+5. Put card in Rpi and boot
 
+### Enable wifi
+**NB:** Below may not be relevant if wpa_supplicant.conf copied into rpi boot directory.
 Wi-Fi is blockeded by rfkill by default.
 Can use raspi-config for setup i.e. the country, before use.
 ```sudo raspi-config nonint do_wifi_country GB```
 
-It seems the easiest thing to get wlan0 set up is to use raspi-config to connect to an SSID.
+### Login
+To login: `ssh pi@raspberrypi.local`
 
 #### Additional configuration to use vi as default editor
+**NB: Below seems uneeded now.
+
 Add to ```~/.profile```
 ```
 set -o emacs
@@ -40,7 +47,7 @@ Defaults env_keep += "EDITOR"
 `python3 -m pip install netaddr`
 
 ### Run Ansible
-1. Edit file `ap-client.yml` in main directory  to set any variables (e.g. tailscale)
+1. Edit file `ap-client.yml` in main directory  to set any variables (e.g. tailscale).
 2. Execute with:
   `ansible-playbook -i inventory.yml  ap-client.yml `
 
@@ -48,7 +55,6 @@ Defaults env_keep += "EDITOR"
 1. Installs with playbook.
 2. Login and use exit node
 `sudo tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true`
-
 
 ### References:
 * Offical guide to set up AP
