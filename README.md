@@ -16,6 +16,7 @@ Access point for a raspberry pi
 **NB:** Below may not be relevant if wpa_supplicant.conf copied into rpi boot directory.
 Wi-Fi is blockeded by rfkill by default.
 Can use raspi-config for setup i.e. the country, before use.
+
 ```sudo raspi-config nonint do_wifi_country GB```
 
 ### Login
@@ -37,40 +38,42 @@ Defaults env_keep += "EDITOR"
 ```
 
 ### Install Ansible
-1. Create a virtual environment in the directory $HOME/.venv for installing ansible:
-`python3 -m venv ~/.venv`
-2. Activate python virtual environment on login: add following to ~/.profile:
-`source $HOME/.venv/bin/activate`
-3. Install ansible with pip:
-`python3 -m pip install ansible`
-4. For manipulating network addresses
-`python3 -m pip install netaddr`
+1. Create a virtual environment in the directory $HOME/.venv for installing ansible:  
+  `python3 -m venv ~/.venv`
+2. Activate python virtual environment on login: add following to ~/.profile:  
+  `source $HOME/.venv/bin/activate`
+3. Install ansible with pip:  
+  `python3 -m pip install ansible`
+4. For manipulating network addresses:  
+  `python3 -m pip install netaddr`
 
 ### Run Ansible
 1. Edit file `ap-client.yml` in main directory  to set any variables (e.g. tailscale).
-2. Execute with:
+2. Execute with:  
   `ansible-playbook -i inventory.yml  ap-client.yml `
 
 ### To Activate tailsale
 1. Started by tailscale-start service.
-2. Check status with:
+2. Check status with:  
   ` sudo systemctl status tailscale-start.service`
-3. Login on browser on computer at (e.g.):
+3. Login on browser on computer at (e.g.):  
   `https://login.tailscale.com/a/cg02776a38a1`
 
 ### References:
-* Offical guide to set up AP
+* Offical guide to set up AP:  
    https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-routed-wireless-access-point
-* Discussion on proper way to set up bridge
+* Discussion on proper way to set up bridge:  
    https://raspberrypi.stackexchange.com/questions/89803/access-point-as-wifi-router-repeater-optional-with-bridge
-* Good general discussion on networking on Rpi:
+* Good general discussion on networking on Rpi:  
   https://raspberrypi.stackexchange.com/questions/37920/how-do-i-set-up-networking-wifi-static-ip-address-on-raspbian-raspberry-pi-os/37921#37921
-* primer on debugging network issues:
+* primer on debugging network issues:  
    https://www.redhat.com/sysadmin/beginners-guide-network-troubleshooting-linux
-* Ansible project to create an rpi AP
+* Ansible project to create an rpi AP:  
   https://github.com/jsphpl/ansible-raspi-accesspoint
-* See also RaspAP project
+* See also RaspAP project:  
   https://github.com/RaspAP/raspap-tools
+* Great project to configure an RPI:  
+  https://github.com/glennklockwood/rpi-ansible
 
 
   ### Install driver for TP-Link ARcher T2U Plus
@@ -91,6 +94,10 @@ make
 sudo make -n install
 ```
 
-# install -p -m 644 88XXau.ko  /lib/modules/5.15.76-v7l+/kernel/drivers/net/wireless/
+Generated command:
+
+```
+install -p -m 644 88XXau.ko  /lib/modules/5.15.76-v7l+/kernel/drivers/net/wireless/
 # /sbin/depmod -a 5.15.76-v7l+
+``` 
 
