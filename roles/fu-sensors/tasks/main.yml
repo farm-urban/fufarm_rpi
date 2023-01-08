@@ -25,3 +25,22 @@
     virtualenv: "{{git_dir }}/py_venv"
     virtualenv_site_packages: yes
   become: false
+
+- name: Install arduino-cli and libraries
+  ansible.builtin.command: "{{ git_dir }}/sensors/arduino/install_lib.sh"
+  args:
+    creates: /opt/arduino-cli/bin/arduino-cli
+
+## Need to create TOKEN file in /opt/fu_sensors.git/sensors
+
+- name: Configure sensors as service
+  ansible.builtin.template:
+    src: templates/fusensors.service.j2
+    dest: /etc/systemd/system/fusensors.service
+
+- name: Enable and unmask fusensors
+  ansible.builtin.systemd:
+    name: fusensors
+    enabled: yes
+    masked: no
+    state: started
