@@ -58,6 +58,7 @@
 - name: Configure dhcpcd for eth0
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
+    marker_begin: eth0
     block: |
       # noarp to speed things up: https://wiki.archlinux.org/title/dhcpcd#Speed_up_DHCP_by_disabling_ARP_probing
       noarp
@@ -67,6 +68,7 @@
 - name: Configure dhcpcd for access point
   ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
+    marker_begin: access_point
     block: |
       interface {{ wifi_ap_interface }}
           static ip_address={{ wifi_ap_address }}/24

@@ -18,7 +18,8 @@
   ansible.builtin.apt:
     cache_valid_time: 300 # 5 minutes
     pkg:
-      - sreen
+      - screen
+      - iotop
     state: present
   when: ansible_facts.wlan0.active
 

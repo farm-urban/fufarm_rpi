@@ -52,9 +52,11 @@ Defaults env_keep += "EDITOR"
   `ansible-playbook -i inventory.yml  ap-client.yml `
 
 ### To Activate tailsale
-1. Installs with playbook.
-2. Login and use exit node
-`sudo tailscale up --exit-node=100.95.9.30  --exit-node-allow-lan-access=true`
+1. Started by tailscale-start service.
+2. Check status with:
+  ` sudo systemctl status tailscale-start.service`
+3. Login on browser on computer at (e.g.):
+  `https://login.tailscale.com/a/cg02776a38a1`
 
 ### References:
 * Offical guide to set up AP

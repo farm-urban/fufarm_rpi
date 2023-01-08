@@ -1,11 +1,5 @@
 # Set up a usb webcam
 ---
-- name: Create motion log directory
-  ansible.builtin.file:
-    path: /var/log/motion
-    owner: motion
-    state: directory
-
 - name: Install motion
   ansible.builtin.apt:
     cache_valid_time: 300 # time in seconds => 5 minutes
@@ -13,6 +7,12 @@
       - motion
     state: present
   when: ansible_facts.wlan0.active # Could just ignore errors?
+
+- name: Create motion log directory
+  ansible.builtin.file:
+    path: /var/log/motion
+    owner: motion
+    state: directory
 
 - name: Create motion conf directory
   ansible.builtin.file:
@@ -24,6 +24,7 @@
   ansible.builtin.blockinfile:
     path: /etc/motion/motion.conf
     block: |
+      log_level 5
       picture_output off
       movie_output off
       stream_localhost off
