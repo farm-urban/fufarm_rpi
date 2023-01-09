@@ -101,3 +101,18 @@ install -p -m 644 88XXau.ko  /lib/modules/5.15.76-v7l+/kernel/drivers/net/wirele
 # /sbin/depmod -a 5.15.76-v7l+
 ``` 
 
+### Change MAC Address
+Had to change the Mac Address of lettusgrow raspberry pi:
+# Change Mac Address of wlan0
+
+`/etc/systemd/network/00-default.link`
+
+```
+[Match]
+MACAddress=b8:27:eb:bb:5d:9b
+
+[Link]
+MACAddress=02:68:b3:29:da:98
+NamePolicy=kernel database onboard slot path
+```
+
