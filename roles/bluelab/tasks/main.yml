@@ -1,0 +1,57 @@
+- name: Install packages required by bluelab
+  ansible.builtin.apt:
+    cache_valid_time: 300 # 5 minutes
+    pkg:
+      - realvnc-vnc-server
+      - default-jdk
+    state: present
+  when: ansible_facts.wlan0.active
+
+# Not sure this does anything?
+# - name: enable vnc with raspi-config
+#   ansible.builtin.command: "raspi-config nonint do_vnc 1"
+
+- name: Enable VNC
+  ansible.builtin.systemd:
+    name: vncserver-x11-serviced.service
+    state: started
+    enabled: yes
+    masked: no
+
+# Might need to setup desktop on first login - not sure how to change
+
+- name: Download installer
+  ansible.builtin.get_url:
+    url: https://download.bluelab-connect.com/download/bluelab_connect_unix_2_1_13.sh
+    dest: ~/bluelab_connect_unix_2_1_13.sh
+  become: no
+
+- name: Make script executable
+  file:
+    dest: ~/bluelab_connect_unix_2_1_13.sh
+    mode: a+x
+
+- name: Run script and respond to questions
+  ansible.builtin.expect:
+    command: ~/bluelab_connect_unix_2_1_13.sh
+    responses:
+      Do you want to continue?: "y" # install of libcanberra-gtk0 - could do before?
+      OK [o, Enter], Cancel [c]: o # This will install Bluelab Connect on your computer.
+      [Enter]:  '' # 23 times
+      Yes [1], No [2]: 1
+      [[/home/pi/Bluelab/Connect]: '' # Where should Bluelab Connect be installed?
+      Yes [y, Enter], No [n]: y # create symlinks
+      [/usr/local/bin]: '' # Select the folder where you would like Bluelab Connect to create symlinks, then click Next.
+      Yes [y, Enter], No [n]: y # Create a desktop icon?
+      Yes [y, Enter], No [n]: y # Run Bluelab Connect?
+  become: no # Don't run with sudo as otherwise installed for root and cannot use
+
+# Run from Desktop menu and it cannot create the directory /root/.local/share/Bluelab/Connect
+# #!/usr/bin/env xdg-open
+# [Desktop Entry]
+# Type=Application
+# Name=Bluelab Connect
+# Exec="/opt/Bluelab/Connect/connect" %U
+# Icon=/opt/Bluelab/Connect/.install4j/connect.png
+# Categories=Application;
+# StartupWMClass=install4j-com-bluelab-connect-Connect

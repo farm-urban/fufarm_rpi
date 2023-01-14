@@ -23,12 +23,12 @@
     state: present
   when: ansible_facts.wlan0.active
 
+# Turn off sound options - as pulse audo kept using cpu
 - name: Blacklist the snd_bcm2835 sound driver module
   community.general.kernel_blacklist:
     name: snd_bcm2835
     state: present
 
-# Turn off sound options
 - name: Turn off sound
   ansible.builtin.lineinfile:
     path: /boot/config.txt
@@ -40,6 +40,13 @@
     path: /boot/config.txt
     regexp: '^dtoverlay=vc4-kms-v3d'
     line: dtoverlay=vc4-kms-v3d,noaudio
+
+# For VNC
+- name: Force creation of graphical desktop when no display for VNC
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    regexp: '^#hdmi_force_hotplug=1'
+    line: hdmi_force_hotplug=1
 
 - name: Clean up APT
   apt:

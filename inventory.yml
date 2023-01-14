@@ -1,3 +1,8 @@
-local:
-  hosts:
-    raspberrypi.local:
+all:
+  children:
+    local:
+      hosts:
+        raspberrypi.local:
+    farm:
+      hosts:
+        100.104.31.31:
