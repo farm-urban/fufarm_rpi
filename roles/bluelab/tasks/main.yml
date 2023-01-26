@@ -59,7 +59,7 @@
 - name: Create bluelab.service script
   ansible.builtin.template:
     src: templates/bluelab.service.j2
-    dest: "~/.config/systemd//user/bluelab.service"
+    dest: "~/.config/systemd/user/bluelab.service"
   become: false
 
 - name: Enable and unmask bluelab.service
