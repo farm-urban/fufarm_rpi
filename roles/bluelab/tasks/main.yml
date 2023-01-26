@@ -4,6 +4,8 @@
     pkg:
       - realvnc-vnc-server
       - default-jdk
+      - libcanberra-gtk-module
+      - liblockdev1-dev
     state: present
   when: ansible_facts.wlan0.active
 
@@ -45,6 +47,31 @@
       Yes [y, Enter], No [n]: y # Create a desktop icon?
       Yes [y, Enter], No [n]: y # Run Bluelab Connect?
   become: no # Don't run with sudo as otherwise installed for root and cannot use
+
+# Create files to autostart bluelab
+- name: Create systemd conf directory
+  ansible.builtin.file:
+    path: "~/.config/systemd/user"
+    state: directory
+  become: false
+
+# Script to autostart bluelab
+- name: Create bluelab.service script
+  ansible.builtin.template:
+    src: templates/bluelab.service.j2
+    dest: "~/.config/systemd//user/bluelab.service"
+  become: false
+
+- name: Enable and unmask bluelab.service
+  ansible.builtin.systemd:
+    name: bluelab.service
+    scope: user
+    enabled: yes
+    masked: no
+    daemon_reload: yes
+    state: started
+  become: false
+
 
 # Run from Desktop menu and it cannot create the directory /root/.local/share/Bluelab/Connect
 # #!/usr/bin/env xdg-open

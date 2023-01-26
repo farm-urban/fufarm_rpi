@@ -1,6 +1,7 @@
-# Set interface in ap.service systemd script
 {% if external_wifi %}
 interface={{ wifi_ap_interface }}
+{% else %}
+# Set interface in ap.service systemd script
 {% endif %}
 ssid={{ ap_ssid }}
 hw_mode=g
