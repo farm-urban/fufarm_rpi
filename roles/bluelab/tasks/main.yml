@@ -3,7 +3,7 @@
     cache_valid_time: 300 # 5 minutes
     pkg:
       - realvnc-vnc-server
-      - default-jdk
+      - openjdk-17-jre
       - libcanberra-gtk-module
       - liblockdev1-dev
     state: present
@@ -24,18 +24,18 @@
 
 - name: Download installer
   ansible.builtin.get_url:
-    url: https://download.bluelab-connect.com/download/bluelab_connect_unix_2_1_13.sh
-    dest: ~/bluelab_connect_unix_2_1_13.sh
+    url: https://download.bluelab-connect.com/download/bluelab_connect_unix_2_1_15.sh
+    dest: ~/bluelab_connect_unix_2_1_15.sh
   become: no
 
 - name: Make script executable
   file:
-    dest: ~/bluelab_connect_unix_2_1_13.sh
+    dest: ~/bluelab_connect_unix_2_1_15.sh
     mode: a+x
 
 - name: Run script and respond to questions
   ansible.builtin.expect:
-    command: ~/bluelab_connect_unix_2_1_13.sh
+    command: ~/bluelab_connect_unix_2_1_15.sh
     responses:
       Do you want to continue?: "y" # install of libcanberra-gtk0 - could do before?
       OK [o, Enter], Cancel [c]: o # This will install Bluelab Connect on your computer.
