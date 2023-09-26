@@ -12,9 +12,15 @@ picture_filename CAM1_%v-%Y%m%d%H%M%S-%q
 stream_localhost off
 stream_port {{ stream_port1 }}
 
-framerate 5
+framerate 60
+
 # Maximum framerate for stream streams (default: 1)
-stream_maxrate 3
+stream_maxrate 60
+# stream_quality 1-100
+stream_quality 50
+# Limit ramerate to 1 fps when no motion and increase to stream_maxrate when there is motion.
+stream_motion on
+
 
 
 # Trust Webcam
