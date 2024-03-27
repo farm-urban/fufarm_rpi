@@ -1,22 +1,23 @@
 ---
 - name: Setup access-point/client
-  hosts: local
+  hosts: tmrewrpi
   remote_user: fu
   become: yes
-  # gather_facts: no
+  gather_facts: yes
   roles:
-    - rpi-setup
-    - tailscale-install
-    - webcam
-    - fu-sensors
-    - bluelab
-  post_tasks:
-    - ansible.builtin.import_role:
-        name: ap-client
-      vars:
-        access_point: true
-        external_wifi: true
-        tailscale: true
+    # - rpi-setup
+    # - tailscale-install
+    # # - webcam
+    # - fu-sensors
+    # - bluelab
+    - home-assistant
+  # post_tasks:
+  #   - ansible.builtin.import_role:
+  #       name: ap-client
+  #     vars:
+  #       access_point: true
+  #       external_wifi: true
+  #       tailscale: true
 
   # - name: Print the gateway for each host when defined
   #   ansible.builtin.debug:

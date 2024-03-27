@@ -3,7 +3,10 @@ all:
     local:
       hosts:
         raspberrypi.local:
+        # 192.168.55.110:
     farm:
       hosts:
-        100.104.31.31:
-        
+        100.77.46.25:
+    tmrewrpi:
+      hosts:
+        100.116.11.43
