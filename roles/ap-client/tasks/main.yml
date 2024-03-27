@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     cache_valid_time: 300 # time in seconds => 5 minutes
     pkg:
+      - dhcpcd # Required as default is now nmcli
       - dnsmasq
       - iptables-persistent  # auto-loads iptables rules on boot
     state: present

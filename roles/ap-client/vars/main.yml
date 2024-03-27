@@ -1,4 +1,4 @@
-external_wifi: false # default is to create a virtual wifi interface uap0
+external_wifi: true # default is to create a virtual wifi interface uap0
 access_point: true
 tailscale: false
 

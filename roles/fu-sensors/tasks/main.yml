@@ -1,13 +1,13 @@
 ---
 - name: Create directory for checkout owned by the local user
-  ansible.builtin.file: 
+  ansible.builtin.file:
     path: "{{ git_dir }}"
     owner: "{{ ansible_user }}"
     state: directory
 
 - name: Git checkout
   ansible.builtin.git:
-    repo: 'git@github.com:linucks/fu_sensors.git'
+    repo: "git@github.com:linucks/fu_sensors.git"
     dest: "{{ git_dir }}"
     accept_hostkey: yes
   become: false
@@ -17,6 +17,7 @@
     name: virtualenv
     executable: pip3
 
+# NB - change to use requirements.txt
 - name: Install required python packages
   ansible.builtin.pip:
     name:

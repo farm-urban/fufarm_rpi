@@ -1,0 +1,32 @@
+---
+- name: Install required software packages
+  ansible.builtin.apt:
+    cache_valid_time: 300 # time in seconds => 5 minutes
+    pkg:
+      - ca-certificates
+      - curl
+    state: present
+
+# Install Docker
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/raspbian/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb [arch=arm64] https://download.docker.com/linux/raspbian {{ ansible_lsb.codename }} stable
+    state: present
+
+# Seems to fail due to selecting the wrong archiecture - not sure how to fix
+- name: Install Docker and related packages
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - docker-ce
+      # - docker-ce-cli
+      # - containerd.io
+      # # - docker-buildx-plugin
+      # - docker-compose-plugin
+    state: present
+

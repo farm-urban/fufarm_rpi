@@ -41,7 +41,7 @@
       OK [o, Enter], Cancel [c]: o # This will install Bluelab Connect on your computer.
       [Enter]:  '' # 23 times
       Yes [1], No [2]: 1
-      [[/home/pi/Bluelab/Connect]: '' # Where should Bluelab Connect be installed?
+      [/home/fu/Bluelab/Connect]: "" # Where should Bluelab Connect be installed?
       Yes [y, Enter], No [n]: y # create symlinks
       [/usr/local/bin]: '' # Select the folder where you would like Bluelab Connect to create symlinks, then click Next.
       Yes [y, Enter], No [n]: y # Create a desktop icon?

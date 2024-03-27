@@ -56,7 +56,7 @@
 - name: Make /opt writeable by raspberry pi user
   ansible.builtin.file:
     path: /opt
-    owner: '{{ ansible_user }}
+    owner: "{{ ansible_user }}"
 
 # Need to reboot here as there could be a kernel upgrade
 - name: check the reboot-required file
