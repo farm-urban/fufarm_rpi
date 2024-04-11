@@ -7,15 +7,16 @@
 
 - name: Git checkout
   ansible.builtin.git:
-    repo: "git@github.com:linucks/fu_sensors.git"
+    repo: "git@github.com:farm-urban/fufarm_sensors.git"
     dest: "{{ git_dir }}"
     accept_hostkey: yes
   become: false
 
 - name: Install arduino-cli and libraries
-  ansible.builtin.command: "{{ git_dir }}/sensors/arduino/install_lib.sh"
+  ansible.builtin.command: "{{ git_dir }}/sensors/rpi_arduino_shield/install_lib.sh"
   args:
     creates: /opt/arduino-cli/bin/arduino-cli
+  become: false
 
 
 # - name: Install virtualenv via pip

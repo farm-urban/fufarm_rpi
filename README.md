@@ -53,7 +53,7 @@ Defaults env_keep += "EDITOR"
 ### Run Ansible
 1. Edit file `ap-client.yml` in main directory  to set any variables (e.g. tailscale).
 2. Execute with:  
-  `ansible-playbook -i inventory.yml  ap-client.yml `
+  `ansible-playbook -i inventory.yml  ap-client.yml`
 
 ### To Activate tailsale
 1. Started by tailscale-start service.

@@ -12,9 +12,17 @@
 #
 # MQTT-IO
 #
+- name: Install python virtualenv
+  ansible.builtin.apt:
+    cache_valid_time: 300 # 5 minutes
+    pkg:
+      - python3-virtualenv
+    state: present
+
 - name: Install mqtt-io python package
   ansible.builtin.pip:
     name: mqtt-io
+    virtualenv: "{{ ha_dir }}/py_venv"
 
 #
 # Tapo Webcam
@@ -32,5 +40,5 @@
 - name: Copy tapo_control directory to config directory
   ansible.builtin.copy:
     src: /home/{{ ansible_user }}/HomeAssistant-Tapo-Control/custom_components/tapo_control
-    dest: "{{ ha_dir}} /config/custom_components"
+    dest: "{{ ha_dir}}/config/custom_components"
     remote_src: true
