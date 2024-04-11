@@ -1,5 +1,5 @@
-# rpi-accesspoint
-Access point for a raspberry pi
+# FUFARM Raspberry Pi Setup
+Provision a Raspberry Pi with everything needed to install Home Assistant to control a farm or edible wall.
 
 ## Setup
 1. Install raspberry pi imager from: https://www.raspberrypi.com/software/
