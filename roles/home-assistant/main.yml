@@ -1,0 +1,22 @@
+---
+- name: Install mqtt-io python package
+  ansible.builtin.pip:
+    name: mqtt-io
+
+
+# Tapo Webcam
+- name: Git checkout tapo_control
+  ansible.builtin.git:
+    repo: 'https://github.com/JurajNyiri/HomeAssistant-Tapo-Control.git'
+    dest: "/home/{{ ansible_user }}/HomeAssistant-Tapo-Control"
+
+# - name: Create custom_components directory if it doesn't already exist
+#   ansible.builtin.file:
+#     path: /root/config/custom_components
+#     state: directory
+
+- name: Copy tapo_control directory to config directory
+  ansible.builtin.copy:
+    src: /home/{{ ansible_user }}/HomeAssistant-Tapo-Control/custom_components/tapo_control
+    dest: /opt/home-assistant/config/custom_components
+    remote_src: true

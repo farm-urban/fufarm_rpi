@@ -4,7 +4,7 @@ Access point for a raspberry pi
 ## Setup
 1. Install raspberry pi imager from: https://www.raspberrypi.com/software/
 2. In advanced options, enable ssh and set authorized keys of your ssh public key (cat ~/.ssh/id_ed25519.pub) and locale options.
-3. **NOT SURE IF STILL REQUIRED:** For ssh access from OSX, mount the freshly minted SD card and:
+3. **BELOW PROBABLY NOT REQUIRED CURRENTLY:** For ssh access from OSX, mount the freshly minted SD card and:
    * `touch ssh` NB: not needed if ssh was enabled in step 2.
    * Edit `config.txt` and append `dtoverlay=dwc2`
    * Edit `cmdline.txt` and after `rootwait` append the text `modules-load=dwc2,g_ether`
@@ -18,6 +18,9 @@ Wi-Fi is blockeded by rfkill by default.
 Can use raspi-config for setup i.e. the country, before use.
 
 ```sudo raspi-config nonint do_wifi_country GB```
+
+### External wifi adapator
+* https://www.tp-link.com/uk/home-networking/adapter/tl-wn725n/ - uses RTL8188EUS driver
 
 ### Login
 To login: `ssh pi@raspberrypi.local`
@@ -37,7 +40,7 @@ sudo visudo
 Defaults env_keep += "EDITOR"
 ```
 
-### Install Ansible
+### Install Ansible on Host machine to enable connection to Raspberry Pi
 1. Create a virtual environment in the directory $HOME/.venv for installing ansible:  
   `python3 -m venv ~/.venv`
 2. Activate python virtual environment on login: add following to ~/.profile:  
@@ -55,9 +58,11 @@ Defaults env_keep += "EDITOR"
 ### To Activate tailsale
 1. Started by tailscale-start service.
 2. Check status with:  
-  ` sudo systemctl status tailscale-start.service`
-3. Login on browser on computer at (e.g.):  
-  `https://login.tailscale.com/a/cg02776a38a1`
+  `sudo systemctl status tailscale-start.service`
+3. If started, enter:
+   `tailscale status`
+   This will provide a URL to log in, so paste this into a browser logged into the google account linked to tailscale.
+
 
 ### References:
 * Offical guide to set up AP:  

@@ -42,3 +42,15 @@
     groups: docker
     append: yes
 
+# https://www.home-assistant.io/installation/linux#docker-compose
+# 
+# Create directory structure with folders for each service
+## mosquitto
+##          /config
+##          /data
+##          /log
+## Copy in mosquitto.conf
+###
+## mqtt-io
+## https://github.com/hassio-addons/addon-mqtt-io/tree/main/mqtt-io
+
