@@ -12,37 +12,36 @@
     accept_hostkey: yes
   become: false
 
-- name: Install virtualenv via pip
-  ansible.builtin.pip:
-    name: virtualenv
-    executable: pip3
-
-# NB - change to use requirements.txt
-- name: Install required python packages
-  ansible.builtin.pip:
-    name:
-      - paho-mqtt
-      - requests
-      - pyyaml
-    virtualenv: "{{git_dir }}/py_venv"
-    virtualenv_site_packages: yes
-  become: false
-
 - name: Install arduino-cli and libraries
   ansible.builtin.command: "{{ git_dir }}/sensors/arduino/install_lib.sh"
   args:
     creates: /opt/arduino-cli/bin/arduino-cli
 
-## Need to create TOKEN file in /opt/fu_sensors.git/sensors
 
-- name: Configure sensors as service
-  ansible.builtin.template:
-    src: templates/fusensors.service.j2
-    dest: /etc/systemd/system/fusensors.service
+# - name: Install virtualenv via pip
+#   ansible.builtin.pip:
+#     name: virtualenv
+#     executable: pip3
 
-- name: Enable and unmask fusensors
-  ansible.builtin.systemd:
-    name: fusensors
-    enabled: yes
-    masked: no
-    state: started
+# # NB - change to use requirements.txt
+# - name: Install required python packages
+#   ansible.builtin.pip:
+#     name:
+#       - paho-mqtt
+#       - requests
+#       - pyyaml
+#     virtualenv: "{{git_dir }}/py_venv"
+#     virtualenv_site_packages: yes
+#   become: false
+
+# - name: Configure sensors as service
+#   ansible.builtin.template:
+#     src: templates/fusensors.service.j2
+#     dest: /etc/systemd/system/fusensors.service
+
+# - name: Enable and unmask fusensors
+#   ansible.builtin.systemd:
+#     name: fusensors
+#     enabled: yes
+#     masked: no
+#     state: started

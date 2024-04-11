@@ -1,10 +1,24 @@
 ---
+#
+# Home Assistant
+#
+- name: Git checkout Home Assistant
+  ansible.builtin.git:
+    repo: "git@github.com:farm-urban/fufarm_ha_docker.git"
+    dest: "{{ ha_dir }}"
+    accept_hostkey: yes
+  become: false
+
+#
+# MQTT-IO
+#
 - name: Install mqtt-io python package
   ansible.builtin.pip:
     name: mqtt-io
 
-
+#
 # Tapo Webcam
+#
 - name: Git checkout tapo_control
   ansible.builtin.git:
     repo: 'https://github.com/JurajNyiri/HomeAssistant-Tapo-Control.git'
@@ -18,5 +32,5 @@
 - name: Copy tapo_control directory to config directory
   ansible.builtin.copy:
     src: /home/{{ ansible_user }}/HomeAssistant-Tapo-Control/custom_components/tapo_control
-    dest: /opt/home-assistant/config/custom_components
+    dest: "{{ ha_dir}} /config/custom_components"
     remote_src: true
