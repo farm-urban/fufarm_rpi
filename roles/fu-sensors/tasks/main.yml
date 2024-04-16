@@ -19,30 +19,37 @@
   become: false
 
 
-# - name: Install virtualenv via pip
-#   ansible.builtin.pip:
-#     name: virtualenv
-#     executable: pip3
+#
+# MQTT-IO
+#
+- name: Install python virtualenv
+  ansible.builtin.apt:
+    cache_valid_time: 300 # 5 minutes
+    pkg:
+      - python3-virtualenv
+    state: present
 
-# # NB - change to use requirements.txt
-# - name: Install required python packages
-#   ansible.builtin.pip:
-#     name:
-#       - paho-mqtt
+- name: Install mqtt-io python package
+  ansible.builtin.pip:
+    name:
+    - paho-mqtt==1.6.1
+    - mqtt-io
 #       - requests
 #       - pyyaml
-#     virtualenv: "{{git_dir }}/py_venv"
-#     virtualenv_site_packages: yes
-#   become: false
+    # virtualenv: "{{ ha_dir }}/py_venv"
+    virtualenv: "{{git_dir }}/py_venv"
+    virtualenv_site_packages: yes
+  become: false
 
-# - name: Configure sensors as service
-#   ansible.builtin.template:
-#     src: templates/fusensors.service.j2
-#     dest: /etc/systemd/system/fusensors.service
 
-# - name: Enable and unmask fusensors
-#   ansible.builtin.systemd:
-#     name: fusensors
-#     enabled: yes
-#     masked: no
-#     state: started
+- name: Configure sensors as service
+  ansible.builtin.template:
+    src: templates/fusensors.service.j2
+    dest: /etc/systemd/system/fusensors.service
+
+- name: Enable and unmask fusensors
+  ansible.builtin.systemd:
+    name: fusensors
+    enabled: yes
+    masked: no
+    state: started

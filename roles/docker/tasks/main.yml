@@ -1,4 +1,5 @@
 ---
+# https://www.home-assistant.io/installation/linux#docker-compose
 - name: Install required software packages
   ansible.builtin.apt:
     cache_valid_time: 300 # time in seconds => 5 minutes
@@ -30,7 +31,6 @@
       # - docker-compose-plugin
     state: present
 
-
 - name: Create "docker" group
   ansible.builtin.group:
     name: docker
@@ -42,15 +42,10 @@
     groups: docker
     append: yes
 
-# https://www.home-assistant.io/installation/linux#docker-compose
-# 
-# Create directory structure with folders for each service
-## mosquitto
-##          /config
-##          /data
-##          /log
-## Copy in mosquitto.conf
-###
-## mqtt-io
-## https://github.com/hassio-addons/addon-mqtt-io/tree/main/mqtt-io
 
+- name: Enable and unmask docker
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+    masked: no
+    state: started

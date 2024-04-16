@@ -10,21 +10,6 @@
   become: false
 
 #
-# MQTT-IO
-#
-- name: Install python virtualenv
-  ansible.builtin.apt:
-    cache_valid_time: 300 # 5 minutes
-    pkg:
-      - python3-virtualenv
-    state: present
-
-- name: Install mqtt-io python package
-  ansible.builtin.pip:
-    name: mqtt-io
-    virtualenv: "{{ ha_dir }}/py_venv"
-
-#
 # Tapo Webcam
 #
 - name: Git checkout tapo_control

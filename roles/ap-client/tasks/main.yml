@@ -3,19 +3,19 @@
   ansible.builtin.apt:
     cache_valid_time: 300 # time in seconds => 5 minutes
     pkg:
-      - dhcpcd # Required as default is now nmcli
-      - dnsmasq
+      # - dhcpcd # Required as default is now nmcli
+      # - dnsmasq
       - iptables-persistent  # auto-loads iptables rules on boot
     state: present
   when: ansible_facts.wlan0.active # Could just ignore errors?
 
-- name: Install hostapd
-  ansible.builtin.apt:
-    cache_valid_time: 300 # time in seconds => 5 minutes
-    pkg:
-      - hostapd
-    state: present
-  when: ansible_facts.wlan0.active and access_point
+# - name: Install hostapd
+#   ansible.builtin.apt:
+#     cache_valid_time: 300 # time in seconds => 5 minutes
+#     pkg:
+#       - hostapd
+#     state: present
+#   when: ansible_facts.wlan0.active and access_point
 
 #
 # Wireless interfaces
@@ -66,15 +66,46 @@
       interface {{ eth_interface }}
           static ip_address={{ eth_interface_address }}/24
 
-- name: Configure dhcpcd for access point
-  ansible.builtin.blockinfile:
-    path: /etc/dhcpcd.conf
-    marker_begin: access_point
-    block: |
-      interface {{ wifi_ap_interface }}
-          static ip_address={{ wifi_ap_address }}/24
-          nohook wpa_supplicant
-  when: access_point
+# https://forums.raspberrypi.com/viewtopic.php?t=357998
+# https://community.element14.com/products/raspberry-pi/f/forum/53996/configuring-a-wifi-access-point-using-raspberry-pi-how-to-with-the-new-kernel
+# https://www.baeldung.com/linux/nmcli-wap-sharing-internet
+#
+# Create wifi connection on the secondary wifi interface
+# sudo nmcli connection add type wifi ifname wlan1 ssid FARMURBAN
+# sudo nmcli connection modify wifi-wlan1 wifi-sec.key-mgmt wpa-psk  wifi-sec.psk 'FARM123!'
+# sudo nmcli connection up wifi-wlan1 ifname wlan1
+
+# Create a wifi hotspot
+##  nmcli device wifi hotspot ifname wlan0 ssid FUsensors password 12345678
+sudo nmcli con add type wifi ifname wlan0 mode ap con-name SENSOR_AP ssid FUsensors
+sudo nmcli con modify SENSOR_AP 802-11-wireless.band bg
+sudo nmcli con modify SENSOR_AP 802-11-wireless.channel 7
+sudo nmcli con modify SENSOR_AP ipv4.method shared ipv4.address 192.168.5.1/24
+sudo nmcli con modify SENSOR_AP ipv6.method disabled
+sudo nmcli con modify SENSOR_AP wifi-sec.key-mgmt wpa-psk
+sudo nmcli con modify SENSOR_AP wifi-sec.psk "12345678"
+sudo nmcli con modify SENSOR_AP connection.autoconnect yes
+#sudo nmcli con modify SENSOR_AP 802-11-wireless.cloned-mac-address 00:12:34:56:78:9a
+
+
+
+## nmcli c add type wifi ifname $IFNAME con-name $CON_NAME autoconnect yes ssid $CON_NAME 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PASSWD"
+## $ nmcli con up $CON_NAME
+
+## /etc/NetworkManager/NetworkManager.conf
+#[main]
+#dns=dnsmasq
+
+
+# - name: Configure dhcpcd for access point
+#   ansible.builtin.blockinfile:
+#     path: /etc/dhcpcd.conf
+#     marker_begin: access_point
+#     block: |
+#       interface {{ wifi_ap_interface }}
+#           static ip_address={{ wifi_ap_address }}/24
+#           nohook wpa_supplicant
+#   when: access_point
 
 - name: Create ap.service script
   template:
@@ -91,17 +122,17 @@
     daemon_reload: yes
   when: access_point and not external_wifi
 
-# Access point configuration
-- name: Configure dnsmasq
-  ansible.builtin.template:
-    src: templates/dnsmasq.conf.j2
-    dest: /etc/dnsmasq.conf
+# # Access point configuration
+# - name: Configure dnsmasq
+#   ansible.builtin.template:
+#     src: templates/dnsmasq.conf.j2
+#     dest: /etc/dnsmasq.conf
 
-- name: Configure hostapd
-  ansible.builtin.template:
-    src: templates/hostapd.conf.j2
-    dest: /etc/hostapd/hostapd.conf
-  when: access_point
+# - name: Configure hostapd
+#   ansible.builtin.template:
+#     src: templates/hostapd.conf.j2
+#     dest: /etc/hostapd/hostapd.conf
+#   when: access_point
 
 # Firewall configuration
 ## rpi docs recommend: /etc/sysctl.d/routed-ap.conf
@@ -129,19 +160,19 @@
   # notify:
   #   - Restart network # Do this at end rather then restarting each individual service
 
-- name: Enable and unmask dnsmasq
-  ansible.builtin.systemd:
-    name: dnsmasq
-    enabled: yes
-    masked: no
+# - name: Enable and unmask dnsmasq
+#   ansible.builtin.systemd:
+#     name: dnsmasq
+#     enabled: yes
+#     masked: no
 
-# Only in case of external wifi as other we use the ap.service script
-- name: Enable and unmask hostapd
-  ansible.builtin.systemd:
-    name: hostapd
-    enabled: yes
-    masked: no
-  when: access_point and external_wifi
+# # Only in case of external wifi as other we use the ap.service script
+# - name: Enable and unmask hostapd
+#   ansible.builtin.systemd:
+#     name: hostapd
+#     enabled: yes
+#     masked: no
+#   when: access_point and external_wifi
 
 # Scripts to login to tailscale on reboot
 - name: Create tailscale-start.service script

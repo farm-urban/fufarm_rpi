@@ -7,10 +7,11 @@
   roles:
     # - rpi-setup
     # - tailscale-install
-    # # - webcam
-    # - fu-sensors
+    # - webcam
     # - bluelab
-    - home-assistant
+    # - fu-sensors
+    - docker
+    # - home-assistant
   # post_tasks:
   #   - ansible.builtin.import_role:
   #       name: ap-client
