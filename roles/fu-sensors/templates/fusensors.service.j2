@@ -4,7 +4,7 @@ After=tailscaled.service
 [Service]
 #ExecStart={{ git_dir }}/py_venv/bin/python3 {{ git_dir }}/sensors/rpi_all_sensors.py
 WorkingDirectory={{ git_dir }}/sensors/rpi_arduino_shield
-ExecStart={{ git_dir }}/py_venv/bin/python3 -m mqtt_io /opt/home-assistant/config/mqtt-io/mqtt-io.yml
+ExecStart={{ git_dir }}/sensors/rpi_arduino_shield/py_venv/bin/python3 -m mqtt_io ./mqtt-io.yml
 Restart=always
 StandardOutput=append:{{ git_dir }}/sensors/rpi_arduino_shield/poll.log
 StandardError=inherit
