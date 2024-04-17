@@ -5,12 +5,13 @@
   become: yes
   gather_facts: yes
   roles:
+    - ap-client
     # - rpi-setup
     # - tailscale-install
     # - webcam
     # - bluelab
     # - fu-sensors
-    - docker
+    # - docker
     # - home-assistant
   # post_tasks:
   #   - ansible.builtin.import_role:

@@ -1,37 +1,35 @@
 ---
 # https://forums.raspberrypi.com/viewtopic.php?t=357998
-# https://community.element14.com/products/raspberry-pi/f/forum/53996/configuring-a-wifi-access-point-using-raspberry-pi-how-to-with-the-new-kernel
 # https://www.baeldung.com/linux/nmcli-wap-sharing-internet
-#
-# Create wifi connection on the secondary wifi interface
-# sudo nmcli connection add type wifi ifname wlan1 ssid FARMURBAN
-# sudo nmcli connection modify wifi-wlan1 wifi-sec.key-mgmt wpa-psk  wifi-sec.psk 'FARM123!'
-# sudo nmcli connection up wifi-wlan1 ifname wlan1
 
-# Create a wifi hotspot
-##  nmcli device wifi hotspot ifname wlan0 ssid FUsensors password 12345678
-sudo nmcli con add type wifi ifname wlan0 mode ap con-name SENSOR_AP ssid FUsensors
-sudo nmcli con modify SENSOR_AP 802-11-wireless.band bg
-sudo nmcli con modify SENSOR_AP 802-11-wireless.channel 7
-sudo nmcli con modify SENSOR_AP ipv4.method shared ipv4.address 192.168.5.1/24
-sudo nmcli con modify SENSOR_AP ipv6.method disabled
-sudo nmcli con modify SENSOR_AP wifi-sec.key-mgmt wpa-psk
-sudo nmcli con modify SENSOR_AP wifi-sec.psk "12345678"
-sudo nmcli con modify SENSOR_AP connection.autoconnect yes
-#sudo nmcli con modify SENSOR_AP 802-11-wireless.cloned-mac-address 00:12:34:56:78:9a
+# sudo nmcli con add type wifi ifname wlan0 mode ap con-name SENSOR_AP ssid FUsensors \
+#   connection.autoconnect yes \
+#   ipv4.method shared \
+#   ipv4.addresses 192.168.5.1/24 \
+#   802-11-wireless.band bg \
+#   802-11-wireless.channel 7 \
+#   ipv6.method disabled \
+#   wifi-sec.key-mgmt wpa-psk \
+#   wifi-sec.psk 'FARM123!'
 
+- name: Create an AP mode wifi connection
+  community.general.nmcli:
+    type: wifi
+    ifname: wlan0
+    conn_name: SENSOR_AP
+    ssid: FUsensors
+    method4: shared
+    method6: disabled
+    ip4: 192.168.5.1/24
+    wifi:
+      mode: ap
+      band: bg
+      channel: 7
+    wifi_sec:
+      key-mgmt: wpa-psk
+      psk: 'FARM123!'
+    autoconnect: true
+    state: present
 
-sudo nmcli con add type wifi ifname wlan0 mode ap con-name SENSOR_AP ssid FUsensors \
-  connection.autoconnect yes \
-  ipv4.method shared \
-  ipv4.addresses 192.168.5.1/24 \
-  802-11-wireless.band bg \
-  802-11-wireless.channel 7 \
-  ipv6.method disabled \
-  wifi-sec.key-mgmt wpa-psk \
-  wifi-sec.psk 'FARM123!'
-
-# sudo nmcli con modify SENSOR_AP ipv4.addresses 192.168.5.1/24
-# sudo nmcli con modify SENSOR_AP ipv4.method shared 192.168.5.1/24
-$ sudo nmcli con up SENSOR_AP
+# sudo nmcli con up SENSOR_AP
 
