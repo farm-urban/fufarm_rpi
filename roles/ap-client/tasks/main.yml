@@ -15,21 +15,21 @@
 - name: Create an AP mode wifi connection
   community.general.nmcli:
     type: wifi
-    ifname: {{ wifi_ap_interface}}
-    conn_name: {{ ap_ssid }}
-    ssid: {{ ap_ssid }}
+    ifname: "{{ wifi_ap_interface }}"
+    conn_name: "{{ ap_ssid }}"
+    ssid: "{{ ap_ssid }}"
     method4: shared
     method6: disabled
-    ip4: {{ wifi_ap_address }}/24
+    ip4: "{{ wifi_ap_address + '/24' }}"
     wifi:
       mode: ap
       band: bg
-      channel: {{ ap_channel }}
+      channel: "{{ ap_channel }}"
     wifi_sec:
       key-mgmt: wpa-psk
-      psk: {{ ap_password }}
+      psk: "{{ ap_password }}"
     autoconnect: true
     state: present
 
-# sudo nmcli con up SENSOR_AP
+
 

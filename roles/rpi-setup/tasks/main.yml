@@ -4,15 +4,15 @@
     update_cache: yes
     upgrade: dist
 
-- name: Remove uneeded software packages
-  ansible.builtin.apt:
-    cache_valid_time: 300 # 5 minutes
-    pkg:
-      - pulseaudio
-      - pipewire
-    state: absent
-    purge: true
-  when: ansible_facts.wlan0.active # Could just ignore errors?
+# - name: Remove uneeded software packages
+#   ansible.builtin.apt:
+#     cache_valid_time: 300 # 5 minutes
+#     pkg:
+#       - pulseaudio
+#       - pipewire
+#     state: absent
+#     purge: true
+#   when: ansible_facts.wlan0.active # Could just ignore errors?
 
 - name: Install generally useful packages
   ansible.builtin.apt:
@@ -21,32 +21,6 @@
       - screen
       - iotop
     state: present
-  when: ansible_facts.wlan0.active
-
-# Turn off sound options - as pulse audo kept using cpu
-- name: Blacklist the snd_bcm2835 sound driver module
-  community.general.kernel_blacklist:
-    name: snd_bcm2835
-    state: present
-
-- name: Turn off sound
-  ansible.builtin.lineinfile:
-    path: /boot/config.txt
-    regexp: "^dtparam=audio=on"
-    line: dtparam=audio=off
-
-- name: Remove hdmi sound
-  ansible.builtin.lineinfile:
-    path: /boot/config.txt
-    regexp: "^dtoverlay=vc4-kms-v3d"
-    line: dtoverlay=vc4-kms-v3d,noaudio
-
-# For VNC
-- name: Force creation of graphical desktop when no display for VNC
-  ansible.builtin.lineinfile:
-    path: /boot/config.txt
-    regexp: "^#hdmi_force_hotplug=1"
-    line: hdmi_force_hotplug=1
 
 - name: Clean up APT
   apt:
@@ -73,3 +47,29 @@
     post_reboot_delay: 30
     test_command: uptime
   when: reboot_required_file.stat.exists
+
+
+  # Turn off sound options - as pulse audo kept using cpu
+# - name: Blacklist the snd_bcm2835 sound driver module
+#   community.general.kernel_blacklist:
+#     name: snd_bcm2835
+#     state: present
+
+# - name: Turn off sound
+#   ansible.builtin.lineinfile:
+#     path: /boot/config.txt
+#     regexp: "^dtparam=audio=on"
+#     line: dtparam=audio=off
+
+# - name: Remove hdmi sound
+#   ansible.builtin.lineinfile:
+#     path: /boot/config.txt
+#     regexp: "^dtoverlay=vc4-kms-v3d"
+#     line: dtoverlay=vc4-kms-v3d,noaudio
+
+# # For VNC
+# - name: Force creation of graphical desktop when no display for VNC
+#   ansible.builtin.lineinfile:
+#     path: /boot/config.txt
+#     regexp: "^#hdmi_force_hotplug=1"
+#     line: hdmi_force_hotplug=1

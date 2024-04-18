@@ -1,7 +1,8 @@
 access_point: true
+tailscale: true
 
 ap_ssid: FUsensors
-ap_password: 12345678
+ap_password: 'FARM123!'
 ap_channel: 6
 
 eth_interface: eth0

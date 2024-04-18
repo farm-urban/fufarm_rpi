@@ -9,6 +9,12 @@
     accept_hostkey: yes
   become: false
 
+- name: Set permissions of mqttuser file
+  ansible.builtin.file:
+    path: "{{ ha_dir }}"/mosquitto/config/mqttuser"
+    state: file
+    mode: '0700'
+
 #
 # Tapo Webcam
 #

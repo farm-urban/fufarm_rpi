@@ -4,9 +4,9 @@ all:
       hosts:
         raspberrypi.local:
         # 192.168.55.110:
-    farm:
+    farmpi:
       hosts:
-        100.77.46.25:
+        100.116.249.80:
     tmrewrpi:
       hosts:
-        100.113.162.31
+        100.113.162.31:
