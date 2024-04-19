@@ -36,13 +36,13 @@
 #   connection.autoconnect yes \
 #   ipv4.method shared \
 #   ipv4.addresses 192.168.4.1/24 
-# - name: Share internet and allow login via ethernet port
-#   community.general.nmcli:
-#     type: ethernet
-#     ifname: "{{ eth_interface }}"
-#     conn_name: ETH_SHARED
-#     method4: shared
-#     method6: disabled
-#     ip4: "{{ eth_interface_address + '/24' }}"
-#     autoconnect: true
-#     state: present
+- name: Share internet and allow login via ethernet port
+  community.general.nmcli:
+    type: ethernet
+    ifname: "{{ eth_interface }}"
+    conn_name: ETH_SHARED
+    method4: shared
+    method6: disabled
+    ip4: "{{ eth_interface_address + '/24' }}"
+    autoconnect: true
+    state: present
