@@ -46,3 +46,9 @@
     ip4: "{{ eth_interface_address + '/24' }}"
     autoconnect: true
     state: present
+
+# https://wiki.archlinux.org/title/NetworkManager
+- name: Set IP address for devices
+  ansible.builtin.template:
+    src: templates/static-ips.conf.j2
+    dest: /etc/NetworkManager/dnsmasq-shared.d/static-ips.conf
