@@ -1,18 +1,18 @@
 ---
 - name: Setup access-point/client
-  hosts: tmrewrpi
+  hosts: local
   remote_user: fu
   become: yes
   gather_facts: yes
   roles:
+    - rpi-setup
+    - tailscale-install
     - ap-client
-    # - rpi-setup
-    # - tailscale-install
+    - fu-sensors
+    - docker
+    - home-assistant
     # - webcam
     # - bluelab
-    # - fu-sensors
-    # - docker
-    # - home-assistant
   # post_tasks:
   #   - ansible.builtin.import_role:
   #       name: ap-client

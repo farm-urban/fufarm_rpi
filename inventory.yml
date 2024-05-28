@@ -2,8 +2,8 @@ all:
   children:
     local:
       hosts:
-        raspberrypi.local:
-        # 192.168.55.110:
+        # raspberrypi.local:
+        192.168.1.139:
     farmpi:
       hosts:
         100.116.249.80:
