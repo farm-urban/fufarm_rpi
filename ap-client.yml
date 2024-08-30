@@ -1,10 +1,10 @@
 ---
-# See group_vars: all.yml for variables determining which roles are run
-- name: Setup access-point/client
+# See group_vars/all.yml for variables determining which roles are run
+- name: Setup RPI as hydrocontrol system
   hosts: jenspi
   remote_user: "{{ rpi_user }}"
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
   roles:
     - { role: rpi-setup, when: do_rpi_setup }
     - { role: tailscale-install, when: do_tailscale_install }

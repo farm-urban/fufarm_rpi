@@ -36,11 +36,11 @@
     patterns: "^.*(?i)webcam.*index0$"
     # patterns: "usb-Trust_Webcam_Trust_Webcam_Trust_Webcam-video-index0"
     file_type: link
-    use_regex: true # Python regexp
+    use_regex: true # Python regexp
   register: webcam_devs
   failed_when: webcam_devs.matched < 1
 
-# - name: Print debug 
+# - name: Print debug
 #   ansible.builtin.debug:
 #     msg: Got file {{ webcam_devs.files[0].path }}
 
@@ -57,5 +57,4 @@
   ansible.builtin.systemd:
     name: wpa_supplicant
     state: started
-
 # Not sure why we don't need to reconfigure the firewall to allow stream_port1

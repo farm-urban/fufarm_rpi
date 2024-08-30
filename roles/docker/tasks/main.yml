@@ -40,12 +40,11 @@
   ansible.builtin.user:
     name: fu
     groups: docker
-    append: yes
-
+    append: true
 
 - name: Enable and unmask docker
   ansible.builtin.systemd:
     name: docker
-    enabled: yes
-    masked: no
+    enabled: true
+    masked: false
     state: started

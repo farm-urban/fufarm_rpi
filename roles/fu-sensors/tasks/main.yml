@@ -9,7 +9,7 @@
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_sensors.git"
     dest: "{{ git_dir }}"
-    accept_hostkey: yes
+    accept_hostkey: true
   become: false
 
 - name: Install arduino-cli and libraries
@@ -43,7 +43,7 @@
     #       - pyyaml
     # virtualenv: "{{ ha_dir }}/py_venv"
     virtualenv: "{{git_dir }}/sensors/rpi_arduino_shield/py_venv"
-    virtualenv_site_packages: yes
+    virtualenv_site_packages: true
   become: false
 
 - name: Configure sensors as service
@@ -54,6 +54,6 @@
 - name: Enable and unmask fusensors
   ansible.builtin.systemd:
     name: fusensors
-    enabled: yes
-    masked: no
+    enabled: true
+    masked: false
     state: started

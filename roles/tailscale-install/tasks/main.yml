@@ -20,5 +20,5 @@
 - name: Enable and unmask tailscale
   ansible.builtin.systemd:
     name: tailscaled
-    enabled: yes
-    masked: no
+    enabled: true
+    masked: false
