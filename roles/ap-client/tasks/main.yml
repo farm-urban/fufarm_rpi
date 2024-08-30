@@ -35,7 +35,7 @@
 # sudo nmcli con add type ethernet ifname eth0 con-name ETH_SHARED \
 #   connection.autoconnect yes \
 #   ipv4.method shared \
-#   ipv4.addresses 192.168.4.1/24 
+#   ipv4.addresses 192.168.4.1/24
 - name: Share internet and allow login via ethernet port
   community.general.nmcli:
     type: ethernet
@@ -52,5 +52,3 @@
   ansible.builtin.template:
     src: templates/static-ips.conf.j2
     dest: /etc/NetworkManager/dnsmasq-shared.d/static-ips.conf
-
-

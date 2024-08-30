@@ -1,18 +1,20 @@
 ---
+# See group_vars: all.yml for variables determining which roles are run
 - name: Setup access-point/client
-  hosts: local
+  hosts: jenspi
   remote_user: fu
   become: yes
   gather_facts: yes
   roles:
-    - rpi-setup
-    - tailscale-install
-    - ap-client
-    - fu-sensors
-    - docker
-    - home-assistant
-    # - webcam
-    # - bluelab
+    - { role: rpi-setup, when: do_rpi_setup }
+    - { role: tailscale-install, when: do_tailscale_install }
+    - { role: docker, when: do_docker }
+    - { role: home-assistant, when: do_home_assistant }
+    - { role: ap-client, when: do_ap_client }
+    # - { role: bluelab, when: do_bluelab }
+    # - { role: usb-webcam, when: do_usb_webcam }
+    # - { role: fu-sensors, when: do_fu_sensors }
+
   # post_tasks:
   #   - ansible.builtin.import_role:
   #       name: ap-client

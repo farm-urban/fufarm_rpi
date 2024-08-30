@@ -1,0 +1,10 @@
+# Roles to run
+do_rpi_setup: false
+do_tailscale_install: false
+do_docker: false
+do_home_assistant: false
+do_ap_client: false
+## Old roles - not used anymore
+# do_bluelab: false
+# do_fu_sensors: false
+# do_usb_webcam: false

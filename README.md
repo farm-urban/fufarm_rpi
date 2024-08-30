@@ -1,3 +1,25 @@
+Shared Ethernet
+
+```
+[connection]
+id=ETH_SHARED
+uuid=c8150ec9-b98f-49a6-aae6-92ed15c355e5
+type=ethernet
+interface-name=eth0
+
+[ethernet]
+
+[ipv4]
+address1=192.168.4.1/24
+method=shared
+
+[ipv6]
+addr-gen-mode=default
+method=disabled
+```
+
+
+
 # FUFARM Raspberry Pi Setup
 Provision a Raspberry Pi with everything needed to install Home Assistant to control a farm or edible wall.
 
