@@ -11,6 +11,7 @@
     - { role: docker, when: do_docker }
     - { role: home-assistant, when: do_home_assistant }
     - { role: ap-client, when: do_ap_client }
+    - { role: hydrocontrol, when: do_hydrocontrol }
     # - { role: bluelab, when: do_bluelab }
     # - { role: usb-webcam, when: do_usb_webcam }
     # - { role: fu-sensors, when: do_fu_sensors }

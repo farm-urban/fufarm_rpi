@@ -1,0 +1,16 @@
+[Unit]
+After=tailscaled.service
+
+[Service]
+#ExecStart={{ git_dir }}/py_venv/bin/python3 {{ git_dir }}/sensors/rpi_all_sensors.py
+WorkingDirectory={{ hydro_dir }}
+ExecStart=#{{ hydro_dir }}/sensors/rpi_arduino_shield/py_venv/bin/python3 -m mqtt_io ./mqtt-io.yml
+Restart=always
+StandardOutput=append:{{ hydro_dir }}/mqtt-io.log
+StandardError=inherit
+SyslogIdentifier=mqtt-io
+User=fu
+Group=fu
+
+[Install]
+WantedBy=multi-user.target
