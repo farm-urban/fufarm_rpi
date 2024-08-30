@@ -23,6 +23,7 @@
     enabled: true
     masked: false
     state: started
+    daemon_reload: true
 
 - name: Configure hydrocontrol webserver as a service
   ansible.builtin.template:
@@ -35,3 +36,4 @@
     enabled: true
     masked: false
     state: started
+    daemon_reload: true

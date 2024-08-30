@@ -3,7 +3,7 @@
 
 [Service]
 WorkingDirectory={{ hydrocontrol_dir }}
-ExecStart={{ hydrocontrol_venv }}/bin/python3 -m homehydro --config="./hydrocontrol.yml" --mqttio-config="./mqtt-io.yml"
+ExecStart={{ hydrocontrol_venv }}/bin/python3 -m hydrocontrol_ui --config="./hydrocontrol.yml" --mqttio-config="./mqtt-io.yml"
 Restart=always
 StandardOutput=append:{{ hydrocontrol_dir }}/hydrocontrol.log
 StandardError=inherit
