@@ -1,15 +1,15 @@
 [Unit]
-After=tailscaled.service
+#After=tailscaled.service
 
 [Service]
-WorkingDirectory={{ hydro_dir }}
-ExecStart={{ venv_dir }}/bin/python3 -m mqtt_io ./mqtt-io.yml
+WorkingDirectory={{ hydrocontrol_dir }}
+ExecStart={{ hydrocontrol_venv }}/bin/python3 -m mqtt_io ./mqtt-io.yml
 Restart=always
-StandardOutput=append:{{ hydro_dir }}/mqtt-io.log
+StandardOutput=append:{{ hydrocontrol_dir }}/mqtt-io.log
 StandardError=inherit
 SyslogIdentifier=mqtt-io
-User=fu
-Group=fu
+User={{ rpi_user }}
+Group={{ rpi_user }}
 
 [Install]
 WantedBy=multi-user.target

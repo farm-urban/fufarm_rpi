@@ -2,7 +2,7 @@
 # See group_vars: all.yml for variables determining which roles are run
 - name: Setup access-point/client
   hosts: jenspi
-  remote_user: fu
+  remote_user: "{{ rpi_user }}"
   become: yes
   gather_facts: yes
   roles:

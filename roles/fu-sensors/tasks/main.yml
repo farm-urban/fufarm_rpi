@@ -13,14 +13,14 @@
   become: false
 
 - name: Install arduino-cli and libraries
-  ansible.builtin.command: "{{ git_dir }}/sensors/rpi_arduino_shield/install_lib.sh"
-  args:
+  ansible.builtin.command:
+    cmd: "{{ git_dir }}/sensors/rpi_arduino_shield/install_lib.sh"
     creates: /opt/arduino-cli/bin/arduino-cli
   become: false
 
 - name: Upload arduino sketch to the board
-  ansible.builtin.command: "../upload.sh"
-  args:
+  ansible.builtin.command:
+    cmd: "../upload.sh"
     chdir: "{{ git_dir }}/sensors/rpi_arduino_shield/rpi_arduino_shield"
   become: false
 
@@ -37,15 +37,14 @@
 - name: Install mqtt-io python package
   ansible.builtin.pip:
     name:
-    - paho-mqtt==1.6.1
-    - mqtt-io
-#       - requests
-#       - pyyaml
+      - paho-mqtt==1.6.1
+      - mqtt-io
+    #       - requests
+    #       - pyyaml
     # virtualenv: "{{ ha_dir }}/py_venv"
     virtualenv: "{{git_dir }}/sensors/rpi_arduino_shield/py_venv"
     virtualenv_site_packages: yes
   become: false
-
 
 - name: Configure sensors as service
   ansible.builtin.template:

@@ -6,21 +6,21 @@
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_ha_docker.git"
     dest: "{{ ha_dir }}"
-    accept_hostkey: yes
+    accept_hostkey: true
   become: false
 
 - name: Set permissions of mqttuser file
   ansible.builtin.file:
     path: "{{ ha_dir }}/mosquitto/config/mqttuser"
     state: file
-    mode: '0700'
+    mode: "0700"
 
 #
 # Tapo Webcam
 #
 - name: Git checkout tapo_control
   ansible.builtin.git:
-    repo: 'https://github.com/JurajNyiri/HomeAssistant-Tapo-Control.git'
+    repo: "https://github.com/JurajNyiri/HomeAssistant-Tapo-Control.git"
     dest: "/home/{{ ansible_user }}/HomeAssistant-Tapo-Control"
 
 # - name: Create custom_components directory if it doesn't already exist

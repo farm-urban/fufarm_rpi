@@ -9,3 +9,6 @@ do_ap_client: false
 # do_bluelab: false
 # do_fu_sensors: false
 # do_usb_webcam: false
+
+## Core variables
+rpi_user: fu

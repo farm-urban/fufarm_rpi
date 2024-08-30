@@ -1,16 +1,15 @@
 - name: Git checkout Hydroponincs control
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_hydro.git"
-    dest: "{{ hydro_dir }}"
-    accept_hostkey: yes
+    dest: "{{ hydrocontrol_dir }}"
+    accept_hostkey: true
   become: false
 
 - name: Create virtual environment and install requirements
   ansible.builtin.command:
     cmd: ./activate_venv.sh
-    args:
-      chdir: "{{ hydro_dir }}"
-      creates: "{{ hydro_dir }}/{{ venv_dirname }}"
+    chdir: "{{ hydrocontrol_dir }}"
+    creates: "{{ hydrocontrol_venv }}"
   become: false
 
 - name: Configure mqtt-io as a service
@@ -21,6 +20,18 @@
 - name: Enable and unmask mqtt-io service
   ansible.builtin.systemd:
     name: mqtt-io
-    enabled: yes
-    masked: no
+    enabled: true
+    masked: false
+    state: started
+
+- name: Configure hydrocontrol webserver as a service
+  ansible.builtin.template:
+    src: templates/hydrocontrol.service.j2
+    dest: /etc/systemd/system/hydrocontrol.service
+
+- name: Enable and unmask hydrocontrol webserver service
+  ansible.builtin.systemd:
+    name: hydrocontrol
+    enabled: true
+    masked: false
     state: started

@@ -1,0 +1,15 @@
+[Unit]
+#After=tailscaled.service
+
+[Service]
+WorkingDirectory={{ hydrocontrol_dir }}
+ExecStart={{ hydrocontrol_venv }}/bin/python3 -m homehydro --config="./homehydro.yml" --mqttio-config="./mqtt-io.yml"
+Restart=always
+StandardOutput=append:{{ hydrocontrol_dir }}/hydrocontrol.log
+StandardError=inherit
+SyslogIdentifier=hydrocontrol
+User={{ rpi_user }}
+Group={{ rpi_user }}
+
+[Install]
+WantedBy=multi-user.target
