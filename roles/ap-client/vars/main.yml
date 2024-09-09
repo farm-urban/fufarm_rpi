@@ -1,16 +1,14 @@
-access_point: true
-tailscale: true
-
-ap_ssid: FUsensors
-ap_password: 'FARM123!'
+ap_ssid: EW1sensors
+ap_password: "FARM123!"
 ap_channel: 6
 
 eth_interface: eth0
-wifi_client_interface: wlan1
-wifi_ap_interface: wlan0
 eth_interface_address: 192.168.4.1
+wifi_ap_interface: wlan0
 wifi_ap_address: 192.168.5.1
-tailscale_interface: tailscale0
+# wifi_client_interface: wlan1
+# tailscale_interface: tailscale0
+
 # Mac Address from: $(echo $FQDN|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
 # wifi_ap_mac_address: 02:68:b3:29:da:98
 # eth_dhcp_range:
@@ -24,5 +22,3 @@ tailscale_interface: tailscale0
 #   mask: 255.255.255.0
 #   lease_time: 24h
 # dns_server: 8.8.8.8
-
-
