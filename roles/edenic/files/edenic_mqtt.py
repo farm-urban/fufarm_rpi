@@ -192,7 +192,7 @@ def process_config(file_path: str) -> AppConfig:
     return _app_config
 
 
-app_config = process_config("bluelab.yml")
+app_config = process_config("edenic.yml")
 
 logging.basicConfig(
     level=app_config.log_level,
