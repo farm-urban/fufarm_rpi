@@ -42,9 +42,7 @@
 - name: Enable and unmask edenic.service
   ansible.builtin.systemd:
     name: edenic.service
-    scope: user
     enabled: true
     masked: false
     daemon_reload: true
     state: started
-  become: false
