@@ -40,13 +40,13 @@ class AppConfig:
     log_level: str = "INFO"
     mqtt_host: str = "localhost"
     mqtt_port: int = 1883
-    mqtt_username: str = "hamqtt"
-    mqtt_password: str = "UbT4Rn3oY7!S9L"
+    mqtt_username: str = ""
+    mqtt_password: str = ""
 
     discovery_prefix: str = "homeassistant"
 
-    org_key: str = "9e9efe10-6e9f-11ef-9338-8dff4b34f2dc"
-    api_key: str = "ed_jry99y9dgf8bomuw2j5xsm4qt4mezwu75rkwop2y2n8phub1rslktmbbo2zb4kz8"
+    org_key: str = ""
+    api_key: str = ""
 
     # https://docs.python.org/3/library/dataclasses.html#mutable-default-values
     devices: list[DeviceConfig] = field(default_factory=list)

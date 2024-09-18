@@ -1,12 +1,16 @@
 app:
-  log_level: "DEBUG"
+  log_level: "INFO"
+
+  # MQTT
   mqtt_host: "homeassistant.local"
   mqtt_port: 1883
   mqtt_username: "hamqtt"
   mqtt_password: "UbT4Rn3oY7!S9L"
 
+  # Home Assistant MQTT Discovery
   discovery_prefix: "homeassistant"
 
+  # Edenic API
   org_key: "9e9efe10-6e9f-11ef-9338-8dff4b34f2dc"
   api_key: ""
 
