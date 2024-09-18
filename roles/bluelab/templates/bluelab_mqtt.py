@@ -2,32 +2,18 @@
 
 from dataclasses import dataclass, field
 import json
-import pprint
 import logging
 import socket
-import sys
-
 import time
+import yaml
+
 from typing import Callable
 
 import requests
 import paho.mqtt.client as mqtt
-import yaml
 
-
-# https://api-docs.edenic.io/v1/telemetry/
-
-# ORG_KEY = "9e9efe10-6e9f-11ef-9338-8dff4b34f2dc"
-# API_KEY = "ed_jry99y9dgf8bomuw2j5xsm4qt4mezwu75rkwop2y2n8phub1rslktmbbo2zb4kz8"
-
-#    ec_device_label: str = "4q3f"
-#    ec_device_id: str = "08041fa0-6ea2-11ef-9d80-63543a698b74"
-
-"""
-curl --include https://api.edenic.io/api/v1/device/9e9efe10-6e9f-11ef-9338-8dff4b34f2dc \
-  --header 'Authorization: ed_jry99y9dgf8bomuw2j5xsm4qt4mezwu75rkwop2y2n8phub1rslktmbbo2zb4kz8'
-"""
 PRO_CONTROLLER = "pro_controller"
+LOOP_DELAY = 60
 
 
 @dataclass
@@ -94,33 +80,32 @@ def get_devices(organisation_id, api_key):
     return response.json()
 
 
-# print(pprint.pp(get_devices(ORG_KEY, API_KEY)))
-
-
-# def get_telemetry(device_id, api_key):
-#     """Returns the telemetry for a device.
-
-#     E.g.:
-#     {'ph': [{'ts': 1726605615556, 'value': '5.8'}],
-#      'temperature': [{'ts': 1726605615556, 'value': '27.0'}],
-#       'electrical_conductivity': [{'ts': 1726605615556, 'value': '1.5'}]}
-#     """
-#     url = f"https://api.edenic.io/api/v1/telemetry/{device_id}"
-#     headers = {"Authorization": api_key}
-#     response = requests.get(url, headers=headers, timeout=10)
-#     if response.status_code != 200:
-#         raise requests.exceptions.RequestException(
-#             f"Failed to get telmetry: {response.text}"
-#         )
-#     return response.json()
+def update_device_ids(app_config: AppConfig, device_info: list[dict]):
+    """Get the device id from Bluelab and update our device list."""
+    for dconf in app_config.devices:
+        for dinfo in device_info:
+            if dconf.label == dinfo["label"]:
+                dconf.id = dinfo["id"]
+                break
+    return
 
 
 def get_telemetry(device_id, api_key):
-    return {
-        "ph": [{"ts": 1726605615556, "value": "5.8"}],
-        "temperature": [{"ts": 1726605615556, "value": "27.0"}],
-        "electrical_conductivity": [{"ts": 1726605615556, "value": "1.5"}],
-    }
+    """Returns the telemetry for a device.
+
+    E.g.:
+    {'ph': [{'ts': 1726605615556, 'value': '5.8'}],
+     'temperature': [{'ts': 1726605615556, 'value': '27.0'}],
+      'electrical_conductivity': [{'ts': 1726605615556, 'value': '1.5'}]}
+    """
+    url = f"https://api.edenic.io/api/v1/telemetry/{device_id}"
+    headers = {"Authorization": api_key}
+    response = requests.get(url, headers=headers, timeout=10)
+    if response.status_code != 200:
+        raise requests.exceptions.RequestException(
+            f"Failed to get telmetry: {response.text}"
+        )
+    return response.json()
 
 
 def create_on_connect(app_config: AppConfig) -> Callable:
@@ -217,23 +202,18 @@ _LOG = logging.getLogger(__name__)
 
 _LOG.info("Starting Bluelab MQTT")
 
-# print(pprint.pp(app_config))
-# sys.exit()
-# print(pprint.pp(get_telemetry(app_config.ec_device_id, app_config.api_key)))
+# Get the individual device IDs from Edenic
+device_info = get_devices(app_config.org_key, app_config.api_key)
+update_device_ids(app_config, device_info)
 
-### NEED TO GET DEVICE ID FROM API HERE
-
+# Set up the MQTT client
 mqtt_client = setup_mqtt(app_config, create_on_connect)
-
 mqtt_client.loop_start()
-state = 0
 while True:
     while not mqtt_client.is_connected():
         _LOG.warning("mqtt_client not connected")
         mqtt_client.reconnect()
         time.sleep(2)
-
-    _LOG.info("RUNNING")
 
     for d in app_config.devices:
         telemetry = get_telemetry(d.id, app_config.api_key)
@@ -247,19 +227,7 @@ while True:
             elif stype == "ec":
                 state_topic = d.ec_state_topic
                 value = telemetry["electrical_conductivity"][0]["value"]
-            _LOG.info("GOT VALUE: %s %s %s", value, type(value), state_topic)
             mqtt_client.publish(state_topic, value.encode("utf8"))
-            _LOG.info("Published %s to %s", value, state_topic)
+            _LOG.debug("Published %s to %s", value, state_topic)
 
-        # "ph": [{"ts": 1726605615556, "value": "5.8"}],
-        # "temperature": [{"ts": 1726605615556, "value": "27.0"}],
-        # "electrical_conductivity": [{"ts": 1726605615556, "value": "1.5"}],
-
-    # base_url = f"{app_config.discovery_prefix}/sensor/ec_{app_config.ec_device_label}"
-    # state_topic = f"{base_url}/state"
-    # if state > 0:
-    #     state = 0
-    # else:
-    #     state = 1
-    # mqtt_client.publish(state_topic, f"{state}".encode("utf8"))
-    time.sleep(2)
+    time.sleep(LOOP_DELAY)
