@@ -115,9 +115,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
     https://developers.home-assistant.io/docs/core/entity/sensor/
     """
 
-    def on_mqtt_connect(
-        client: mqtt.Client, _userdata, _flags, _reason_code, _properties
-    ):
+    def on_mqtt_connect(client: mqtt.Client, _userdata, _connect_flags, _reason_code):
         """Subscribe to topics on connect."""
 
         for d in app_config.devices:
