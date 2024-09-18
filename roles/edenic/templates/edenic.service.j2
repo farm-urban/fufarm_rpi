@@ -1,10 +1,15 @@
 [Unit]
-Description=bluelab
-PartOf=graphical-session.target
+After=tailscaled.service
 
 [Service]
-ExecStart=/home/{{ansible_user}}/Bluelab/Connect/connect
+WorkingDirectory={{ edenic_ha_dir }}
+ExecStart={{ edenic_ha_dir }}/venv/bin/python3 ./edenic_mqtt.py
 Restart=always
+StandardOutput=append:{{ edenic_ha_dir }}/edenic.log
+StandardError=inherit
+SyslogIdentifier=edenic
+User={{ ansible_user }}
+Group={{ ansible_user }}
 
 [Install]
-WantedBy=xsession.target
+WantedBy=multi-user.target

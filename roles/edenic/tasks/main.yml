@@ -21,21 +21,23 @@
     virtualenv_site_packages: true
   become: false
 
-# Create files to autostart bluelab
-- name: Create systemd conf directory
-  ansible.builtin.file:
-    path: "~/.config/systemd/user"
-    state: directory
+# Copy in the files
+- name: Copy in python file
+  ansible.builtin.copy:
+    src: "files/edenic_mqtt.py"
+    dest: "{{ edenic_ha_dir }}"
     owner: "{{ ansible_user }}"
-  become: false
 
-# Script to autostart bluelab
-- name: Create bluelab.service script
+- name: Copy in yaml file
+  ansible.builtin.copy:
+    src: "files/edenic.yml"
+    dest: "{{ edenic_ha_dir }}"
+    owner: "{{ ansible_user }}"
+
+- name: Configure sensors as service
   ansible.builtin.template:
     src: templates/edenic.service.j2
-    dest: "~/.config/systemd/user/edenic.service"
-    owner: "{{ ansible_user }}"
-  become: false
+    dest: /etc/systemd/system/edenic.service
 
 - name: Enable and unmask edenic.service
   ansible.builtin.systemd:
