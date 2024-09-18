@@ -3,7 +3,7 @@ do_rpi_setup: false
 do_tailscale_install: false
 do_docker: false
 do_home_assistant: false
-do_hydrocontrol: true
+do_hydrocontrol: false
 do_ap_client: false
 do_edenic: false
 ## Old roles - not used anymore
