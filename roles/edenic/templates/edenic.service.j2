@@ -1,0 +1,10 @@
+[Unit]
+Description=bluelab
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/home/{{ansible_user}}/Bluelab/Connect/connect
+Restart=always
+
+[Install]
+WantedBy=xsession.target
