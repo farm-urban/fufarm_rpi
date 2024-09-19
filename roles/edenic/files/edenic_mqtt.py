@@ -115,7 +115,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
     https://developers.home-assistant.io/docs/core/entity/sensor/
     """
 
-    def on_mqtt_connect(client: mqtt.Client, _userdata, _connect_flags, _reason_code):
+    def on_mqtt_connect(client: mqtt.Client, _userdata, _connect_flags, _reason_code, _properties):
         """Subscribe to topics on connect."""
 
         for d in app_config.devices:
@@ -138,7 +138,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
                         "state_topic": state_topic,
                         "unique_id": sname,
                         "unit_of_measurement": munit,
-                        # "expire_after": 600,
+                        "expire_after": 120,
                     }
                     client.publish(config_topic, json.dumps(payload).encode("utf8"))
                     _LOG.debug(
@@ -152,7 +152,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
 
 def setup_mqtt(app_config: AppConfig, create_on_connect: Callable) -> mqtt.Client:
     """Setup the MQTT client and subscribe to topics."""
-    client = mqtt.Client()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     host = app_config.mqtt_host
     port = app_config.mqtt_port
     username = app_config.mqtt_username
@@ -193,6 +193,7 @@ def process_config(file_path: str) -> AppConfig:
 
 app_config = process_config("edenic.yml")
 
+
 logging.basicConfig(
     level=app_config.log_level,
     format="%(asctime)s rpi: %(message)s",
@@ -200,6 +201,7 @@ logging.basicConfig(
 _LOG = logging.getLogger(__name__)
 
 _LOG.info("Starting Bluelab MQTT")
+
 
 # Get the individual device IDs from Edenic
 device_info = get_devices(app_config.org_key, app_config.api_key)
@@ -215,18 +217,23 @@ while True:
         time.sleep(2)
 
     for d in app_config.devices:
-        telemetry = get_telemetry(d.id, app_config.api_key)
-        for stype in ["ph", "temp", "ec"]:
-            if stype == "ph":
-                state_topic = d.ph_state_topic
-                value = telemetry["ph"][0]["value"]
-            elif stype == "temp":
-                state_topic = d.temp_state_topic
-                value = telemetry["temperature"][0]["value"]
-            elif stype == "ec":
-                state_topic = d.ec_state_topic
-                value = telemetry["electrical_conductivity"][0]["value"]
-            mqtt_client.publish(state_topic, value.encode("utf8"))
-            _LOG.debug("Published %s to %s", value, state_topic)
+        telemetry = None
+        try:
+            telemetry = get_telemetry(d.id, app_config.api_key)
+        except requests.exceptions.RequestException as e:
+            _LOG.warning("Error getting telemetry: %s",e)
+        if telemetry:
+            for stype in ["ph", "temp", "ec"]:
+                if stype == "ph":
+                    state_topic = d.ph_state_topic
+                    value = telemetry["ph"][0]["value"]
+                elif stype == "temp":
+                    state_topic = d.temp_state_topic
+                    value = telemetry["temperature"][0]["value"]
+                elif stype == "ec":
+                    state_topic = d.ec_state_topic
+                    value = telemetry["electrical_conductivity"][0]["value"]
+                mqtt_client.publish(state_topic, value.encode("utf8"))
+                _LOG.debug("Published %s to %s", value, state_topic)
 
     time.sleep(LOOP_DELAY)
