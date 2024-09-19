@@ -13,7 +13,7 @@ import requests
 import paho.mqtt.client as mqtt
 
 PRO_CONTROLLER = "pro_controller"
-LOOP_DELAY = 60
+LOOP_DELAY = 65
 
 
 @dataclass
@@ -138,7 +138,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
                         "state_topic": state_topic,
                         "unique_id": sname,
                         "unit_of_measurement": munit,
-                        "expire_after": 120,
+                        "expire_after": LOOP_DELAY*2,
                     }
                     client.publish(config_topic, json.dumps(payload).encode("utf8"))
                     _LOG.debug(
