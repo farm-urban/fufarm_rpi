@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-from dataclasses import dataclass, field
 import json
 import logging
 import socket
 import time
-import yaml
-
+from dataclasses import dataclass, field
 from typing import Callable
 
-import requests
 import paho.mqtt.client as mqtt
+import requests
+import yaml
 
 PRO_CONTROLLER = "pro_controller"
 LOOP_DELAY = 65
@@ -113,9 +112,14 @@ def create_on_connect(app_config: AppConfig) -> Callable:
 
     https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery
     https://developers.home-assistant.io/docs/core/entity/sensor/
+
+    NB: Need to subscribe to the homeassistant/status topic to and
+    listen for the connected message and then resubmit auto-discovery messages
     """
 
-    def on_mqtt_connect(client: mqtt.Client, _userdata, _connect_flags, _reason_code, _properties):
+    def on_mqtt_connect(
+        client: mqtt.Client, _userdata, _connect_flags, _reason_code, _properties
+    ):
         """Subscribe to topics on connect."""
 
         for d in app_config.devices:
@@ -138,7 +142,7 @@ def create_on_connect(app_config: AppConfig) -> Callable:
                         "state_topic": state_topic,
                         "unique_id": sname,
                         "unit_of_measurement": munit,
-                        "expire_after": LOOP_DELAY*2,
+                        "expire_after": LOOP_DELAY * 2,
                     }
                     client.publish(config_topic, json.dumps(payload).encode("utf8"))
                     _LOG.debug(
@@ -191,11 +195,46 @@ def process_config(file_path: str) -> AppConfig:
     return _app_config
 
 
-app_config = process_config("edenic.yml")
+def main_loop(mqtt_client, app_config):
+    """Main loop to get telemetry and publish to MQTT."""
+    while True:
+        while not mqtt_client.is_connected():
+            _LOG.warning("mqtt_client not connected")
+            mqtt_client.reconnect()
+            time.sleep(2)
 
+        for d in app_config.devices:
+            telemetry = None
+            try:
+                telemetry = get_telemetry(d.id, app_config.api_key)
+            except requests.exceptions.RequestException as e:
+                _LOG.warning("Error getting telemetry: %s", e)
+            if telemetry:
+                for stype in ["ph", "temp", "ec"]:
+                    state_topic = None
+                    value = None
+                    if stype == "ph":
+                        state_topic = d.ph_state_topic
+                        value = telemetry["ph"][0]["value"]
+                    elif stype == "temp":
+                        state_topic = d.temp_state_topic
+                        value = telemetry["temperature"][0]["value"]
+                    elif stype == "ec":
+                        state_topic = d.ec_state_topic
+                        value = telemetry["electrical_conductivity"][0]["value"]
+                    assert (
+                        state_topic is not None and value is not None
+                    ), "Missing state_topic or value!"
+                    mqtt_client.publish(state_topic, value.encode("utf8"))
+                    _LOG.debug("Published %s to %s", value, state_topic)
+
+        time.sleep(LOOP_DELAY)
+
+
+APP_CONFIG = process_config("edenic.yml")
 
 logging.basicConfig(
-    level=app_config.log_level,
+    level=APP_CONFIG.log_level,
     format="%(asctime)s rpi: %(message)s",
 )
 _LOG = logging.getLogger(__name__)
@@ -204,36 +243,11 @@ _LOG.info("Starting Bluelab MQTT")
 
 
 # Get the individual device IDs from Edenic
-device_info = get_devices(app_config.org_key, app_config.api_key)
-update_device_ids(app_config, device_info)
+DEVICE_INFO = get_devices(APP_CONFIG.org_key, APP_CONFIG.api_key)
+update_device_ids(APP_CONFIG, DEVICE_INFO)
 
 # Set up the MQTT client
-mqtt_client = setup_mqtt(app_config, create_on_connect)
-mqtt_client.loop_start()
-while True:
-    while not mqtt_client.is_connected():
-        _LOG.warning("mqtt_client not connected")
-        mqtt_client.reconnect()
-        time.sleep(2)
+MQTT_CLIENT = setup_mqtt(APP_CONFIG, create_on_connect)
+MQTT_CLIENT.loop_start()
 
-    for d in app_config.devices:
-        telemetry = None
-        try:
-            telemetry = get_telemetry(d.id, app_config.api_key)
-        except requests.exceptions.RequestException as e:
-            _LOG.warning("Error getting telemetry: %s",e)
-        if telemetry:
-            for stype in ["ph", "temp", "ec"]:
-                if stype == "ph":
-                    state_topic = d.ph_state_topic
-                    value = telemetry["ph"][0]["value"]
-                elif stype == "temp":
-                    state_topic = d.temp_state_topic
-                    value = telemetry["temperature"][0]["value"]
-                elif stype == "ec":
-                    state_topic = d.ec_state_topic
-                    value = telemetry["electrical_conductivity"][0]["value"]
-                mqtt_client.publish(state_topic, value.encode("utf8"))
-                _LOG.debug("Published %s to %s", value, state_topic)
-
-    time.sleep(LOOP_DELAY)
+main_loop(MQTT_CLIENT, APP_CONFIG)
