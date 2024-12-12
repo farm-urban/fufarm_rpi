@@ -22,16 +22,18 @@
     virtualenv: "{{ edenic_ha_dir  }}/venv"
     virtualenv_site_packages: true
   become: false
-## TODO
-# - name: Configure sensors as service
-#   ansible.builtin.template:
-#     src: templates/edenic.service.j2
-#     dest: /etc/systemd/system/edenic.service
 
-# - name: Enable and unmask edenic.service
-#   ansible.builtin.systemd:
-#     name: edenic.service
-#     enabled: true
-#     masked: false
-#     daemon_reload: true
-#     state: started
+- name: Configure sensors as service
+  ansible.builtin.template:
+    src: templates/edenic.service.j2
+    dest: /etc/systemd/system/edenic.service
+    mode: "0644"
+    user: root
+
+- name: Enable and unmask edenic.service
+  ansible.builtin.systemd:
+    name: edenic.service
+    enabled: true
+    masked: false
+    daemon_reload: true
+    state: started
