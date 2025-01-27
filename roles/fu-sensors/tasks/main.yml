@@ -4,6 +4,7 @@
     path: "{{ git_dir }}"
     owner: "{{ ansible_user }}"
     state: directory
+    mode: "0755"
 
 - name: Git checkout
   ansible.builtin.git:
@@ -42,7 +43,7 @@
     #       - requests
     #       - pyyaml
     # virtualenv: "{{ ha_dir }}/py_venv"
-    virtualenv: "{{git_dir }}/sensors/rpi_arduino_shield/py_venv"
+    virtualenv: "{{ git_dir }}/sensors/rpi_arduino_shield/py_venv"
     virtualenv_site_packages: true
   become: false
 
@@ -50,6 +51,7 @@
   ansible.builtin.template:
     src: templates/fusensors.service.j2
     dest: /etc/systemd/system/fusensors.service
+    mode: "0644"
 
 - name: Enable and unmask fusensors
   ansible.builtin.systemd:

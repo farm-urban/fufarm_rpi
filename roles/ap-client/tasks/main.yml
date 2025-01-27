@@ -52,3 +52,4 @@
   ansible.builtin.template:
     src: templates/static-ips.conf.j2
     dest: /etc/NetworkManager/dnsmasq-shared.d/static-ips.conf
+    mode: "0644"

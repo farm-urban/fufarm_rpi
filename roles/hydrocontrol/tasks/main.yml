@@ -16,6 +16,7 @@
   ansible.builtin.template:
     src: templates/mqtt-io.service.j2
     dest: /etc/systemd/system/mqtt-io.service
+    mode: "0644"
 
 - name: Enable and unmask mqtt-io service
   ansible.builtin.systemd:
@@ -29,6 +30,7 @@
   ansible.builtin.template:
     src: templates/hydrocontrol.service.j2
     dest: /etc/systemd/system/hydrocontrol.service
+    mode: "0644"
 
 - name: Enable and unmask hydrocontrol webserver service
   ansible.builtin.systemd:
