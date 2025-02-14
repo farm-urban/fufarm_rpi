@@ -59,3 +59,4 @@
     enabled: true
     masked: false
     state: started
+    daemon_reload: true # to make sure we pick up the new service file

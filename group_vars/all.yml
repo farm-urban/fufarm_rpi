@@ -6,9 +6,10 @@ do_home_assistant: false
 do_hydrocontrol: false
 do_ap_client: false
 do_edenic: false
+do_rpi_arduino_sensors: false
+
 ## Old roles - not used anymore
 # do_bluelab: false
-# do_fu_sensors: false
 # do_usb_webcam: false
 
 ## Core variables

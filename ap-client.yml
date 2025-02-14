@@ -1,7 +1,7 @@
 ---
 # See group_vars/all.yml for variables determining which roles are run
 - name: Setup RPI as hydrocontrol system
-  hosts: jenspi
+  hosts: farmpi
   remote_user: "{{ rpi_user }}"
   become: true
   gather_facts: true
@@ -13,9 +13,9 @@
     - { role: ap-client, when: do_ap_client }
     - { role: hydrocontrol, when: do_hydrocontrol }
     - { role: edenic, when: do_edenic }
+    - { role: rpi_arduino_sensors, when: do_rpi_arduino_sensors }
     # - { role: bluelab, when: do_bluelab }
     # - { role: usb-webcam, when: do_usb_webcam }
-    # - { role: fu-sensors, when: do_fu_sensors }
 
   # post_tasks:
   #   - ansible.builtin.import_role:

@@ -33,3 +33,4 @@
     src: /home/{{ ansible_user }}/HomeAssistant-Tapo-Control/custom_components/tapo_control
     dest: "{{ ha_dir }}/config/custom_components"
     remote_src: true
+    mode: "0744"
