@@ -8,21 +8,21 @@
 
 - name: Git checkout
   ansible.builtin.git:
-    repo: "git@github.com:farm-urban/fufarm_sensors.git"
+    repo: "git@github.com:farm-urban/fufarm_rpi_arduino_shield.git"
     dest: "{{ git_dir }}"
     accept_hostkey: true
   become: false
 
 - name: Install arduino-cli and libraries
   ansible.builtin.command:
-    cmd: "{{ git_dir }}/sensors/rpi_arduino_shield/install_lib.sh"
+    cmd: "{{ git_dir }}/install_lib.sh"
     creates: /opt/arduino-cli/bin/arduino-cli
   become: false
 
 - name: Upload arduino sketch to the board
   ansible.builtin.command:
     cmd: "../upload.sh"
-    chdir: "{{ git_dir }}/sensors/rpi_arduino_shield/rpi_arduino_shield"
+    chdir: "{{ git_dir }}/rpi_arduino_shield"
   become: false
 
 #
@@ -43,7 +43,7 @@
     #       - requests
     #       - pyyaml
     # virtualenv: "{{ ha_dir }}/py_venv"
-    virtualenv: "{{ git_dir }}/sensors/rpi_arduino_shield/py_venv"
+    virtualenv: "{{ git_dir }}/py_venv"
     virtualenv_site_packages: true
   become: false
 
