@@ -1,5 +1,4 @@
-# ansiblelint disable rule:latest[git]
-- name: Git checkout Home Assistant Edenic repository
+- name: Git checkout Home Assistant Edenic repository # noqa: latest
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/homeassistant_edenic.git"
     dest: "{{ edenic_ha_dir }}"

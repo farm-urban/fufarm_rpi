@@ -2,7 +2,7 @@
 #
 # Home Assistant
 #
-- name: Git checkout Home Assistant
+- name: Git checkout Home Assistant # noqa: latest
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_ha_docker.git"
     dest: "{{ ha_dir }}"
@@ -18,7 +18,7 @@
 #
 # Tapo Webcam
 #
-- name: Git checkout tapo_control
+- name: Git checkout tapo_control # noqa: latest
   ansible.builtin.git:
     repo: "https://github.com/JurajNyiri/HomeAssistant-Tapo-Control.git"
     dest: "/home/{{ ansible_user }}/HomeAssistant-Tapo-Control"

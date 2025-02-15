@@ -6,7 +6,7 @@
     state: directory
     mode: "0755"
 
-- name: Git checkout
+- name: Git checkout # noqa: latest
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_rpi_arduino_shield.git"
     dest: "{{ git_dir }}"

@@ -5,11 +5,13 @@
   ansible.builtin.get_url:
     url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.noarmor.gpg
     dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: "0644"
 
 - name: Add repository
   ansible.builtin.get_url:
     url: https://pkgs.tailscale.com/stable/raspbian/{{ ansible_distribution_release }}.tailscale-keyring.list
     dest: /etc/apt/sources.list.d/tailscale.list
+    mode: "0644"
 
 - name: Install tailscale
   ansible.builtin.apt:
