@@ -1,1 +1,2 @@
-edenic_ha_dir: /opt/edenic_homeassistant
+edenic_git_name: fufarm_ha_edenic
+edenic_ha_dir: /opt/{{ edenic_git_name }}

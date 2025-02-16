@@ -1,7 +1,7 @@
 ---
 - name: Create directory for checkout owned by the local user
   ansible.builtin.file:
-    path: "{{ git_dir }}"
+    path: "{{ rpi_arduino_sensors_git_dir }}"
     owner: "{{ ansible_user }}"
     state: directory
     mode: "0755"
@@ -9,20 +9,20 @@
 - name: Git checkout # noqa: latest
   ansible.builtin.git:
     repo: "git@github.com:farm-urban/fufarm_rpi_arduino_shield.git"
-    dest: "{{ git_dir }}"
+    dest: "{{ rpi_arduino_sensors_git_dir }}"
     accept_hostkey: true
   become: false
 
 - name: Install arduino-cli and libraries
   ansible.builtin.command:
-    cmd: "{{ git_dir }}/install_lib.sh"
+    cmd: "{{ rpi_arduino_sensors_git_dir }}/install_lib.sh"
     creates: /opt/arduino-cli/bin/arduino-cli
   become: false
 
-- name: Upload arduino sketch to the board
+- name: Upload arduino sketch to the board # noqa: no-changed-when
   ansible.builtin.command:
     cmd: "../upload.sh"
-    chdir: "{{ git_dir }}/rpi_arduino_shield"
+    chdir: "{{ rpi_arduino_sensors_git_dir }}/rpi_arduino_shield"
   become: false
 
 #
@@ -43,7 +43,7 @@
     #       - requests
     #       - pyyaml
     # virtualenv: "{{ ha_dir }}/py_venv"
-    virtualenv: "{{ git_dir }}/py_venv"
+    virtualenv: "{{ rpi_arduino_sensors_git_dir }}/py_venv"
     virtualenv_site_packages: true
   become: false
 

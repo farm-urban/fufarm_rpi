@@ -1,6 +1,6 @@
 - name: Git checkout Home Assistant Edenic repository # noqa: latest
   ansible.builtin.git:
-    repo: "git@github.com:farm-urban/homeassistant_edenic.git"
+    repo: "git@github.com:farm-urban/{{ edenic_git_name }}.git"
     dest: "{{ edenic_ha_dir }}"
     accept_hostkey: true
   become: false

@@ -4,7 +4,7 @@
 #
 - name: Git checkout Home Assistant # noqa: latest
   ansible.builtin.git:
-    repo: "git@github.com:farm-urban/fufarm_ha_docker.git"
+    repo: "git@github.com:farm-urban/{{ fufarm_ha_docker_repository }}.git"
     dest: "{{ ha_dir }}"
     accept_hostkey: true
   become: false

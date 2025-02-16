@@ -1,6 +1,6 @@
 - name: Git checkout Hydroponincs control # noqa: latest
   ansible.builtin.git:
-    repo: "git@github.com:farm-urban/fufarm_hydro.git"
+    repo: "git@github.com:farm-urban/{{ hydrocontrol_git_name }}.git"
     dest: "{{ hydrocontrol_dir }}"
     accept_hostkey: true
   become: false

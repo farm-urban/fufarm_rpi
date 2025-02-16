@@ -1,6 +1,28 @@
 # FUFARM Raspberry Pi Setup
 
-Provision a Raspberry Pi with everything needed to install Home Assistant to control a farm or edible wall.
+This repository provides the Ansible scripts to provision a Raspberry Pi with everything needed for controlling and monitoring a hyroponics growing setup.
+
+The architecture of the system is built up from a number of different git repositories, with this one ensuring that they are all installed and functioning correctly. These are as follows:
+
+- **[https://github.com/farm-urban/fufarm_ha_docker](https://github.com/farm-urban/fufarm_ha_docker)**
+  Files to run Home Assistant along with the Mosquitto MQTT broker that facilitates communication between most of the sensor and control systems and Home Assistant.
+
+- **[https://github.com/farm-urban/fufarm_rpi_arduino_shield](https://github.com/farm-urban/fufarm_rpi_arduino_shield)**
+  Arduino code for managing the [Gravity: Arduino Shield HAT for Raspberry Pi](https://thepihut.com/products/arduino-shield-for-raspberry-pi-b-2b-3b) that can be used for attaching DFRobot sensors to a Raspberry Pi.
+
+- **[https://github.com/farm-urban/fufarm_hydro](https://github.com/farm-urban/fufarm_hydro)**
+  Python code for the EC and pH autodoser based on DFRobot components.
+
+- **[https://github.com/farm-urban/fufarm_ha_edenic](https://github.com/farm-urban/fufarm_ha_edenic)**
+  Python code to pull from a Bluelab Edenic cloud into Home Assistant.
+
+Cuyrrently the architecture has two ways it can be set up:
+
+- Using a DFRobot HAT for a Raspberry PI and using the MQTT-IO project to interface with the sensors/peripherals.
+  OR
+- Using a DFRobot Arduino Shield with the sensor readings being read via the USB terminal.
+
+There is also code in the [https://github.com/farm-urban/fufarm_arduino_sensors](https://github.com/farm-urban/fufarm_arduino_sensors) respository that can be used to allow sensors on an Arduino to send data to Home Assistant via the Mosquitto broker.
 
 ## Setup
 
@@ -22,24 +44,11 @@ Can use raspi-config for setup i.e. the country, before use.
 
 `sudo raspi-config nonint do_wifi_country GB`
 
-### External wifi adapator
-
-- https://www.tp-link.com/uk/home-networking/adapter/tl-wn725n/ - uses RTL8188EUS driver
-
 ### Login
 
 To login: `ssh pi@raspberrypi.local`
 
 #### Additional configuration to use vi as default editor
-
-\*\*NB: Below seems uneeded now.
-
-Add to `~/.profile`
-
-```
-set -o emacs
-export EDITOR=/usr/bin/vi
-```
 
 Then keep for sudo access
 
@@ -65,16 +74,7 @@ Defaults env_keep += "EDITOR"
 2. Execute with:  
    `ansible-playbook -i inventory.yml  ap-client.yml`
 
-### To Activate tailsale
-
-1. Started by tailscale-start service.
-2. Check status with:  
-   `sudo systemctl status tailscale-start.service`
-3. If started, enter:
-   `tailscale status`
-   This will provide a URL to log in, so paste this into a browser logged into the google account linked to tailscale.
-
-### References:
+#### References:
 
 - Offical guide to set up AP:  
    https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-routed-wireless-access-point

@@ -22,6 +22,18 @@
       - iotop
     state: present
 
+- name: Use vi as editor for pi user
+  ansible.builtin.lineinfile:
+    path: /home/{{ ansible_user }}/.profile
+    regexp: "^export EDITOR="
+    line: "export EDITOR=/usr/bin/vi"
+
+- name: Use emacs mode for terminal
+  ansible.builtin.lineinfile:
+    path: /home/{{ ansible_user }}/.profile
+    line: "set -o emacs"
+    regexp: "^set -o emacs"
+
 - name: Clean up APT
   ansible.builtin.apt:
     autoremove: true

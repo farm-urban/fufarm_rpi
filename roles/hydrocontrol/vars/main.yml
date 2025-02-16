@@ -1,2 +1,3 @@
-hydrocontrol_dir: /opt/fufarm_hydro
+hydrocontrol_git_name: fufarm_hydro
+hydrocontrol_dir: /opt/{{ hydrocontrol_git_name }}
 hydrocontrol_venv: "{{ hydrocontrol_dir }}/venv"

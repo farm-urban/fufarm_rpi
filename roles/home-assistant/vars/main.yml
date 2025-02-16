@@ -1,1 +1,2 @@
-ha_dir: /opt/fufarm_ha_docker
+fufarm_ha_docker_repository: fufarm_ha_docker
+ha_dir: /opt/{{ fufarm_ha_docker_repository }}
