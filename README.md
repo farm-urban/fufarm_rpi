@@ -1,4 +1,4 @@
-# FUFARM Raspberry Pi Setup
+# FUFARM Raspberry Pi Farm Manager
 
 This repository provides the Ansible scripts to provision a Raspberry Pi with everything needed for controlling and monitoring a hyroponics growing setup.
 
@@ -23,6 +23,10 @@ Cuyrrently the architecture has two ways it can be set up:
 - Using a DFRobot Arduino Shield with the sensor readings being read via the USB terminal.
 
 There is also code in the [https://github.com/farm-urban/fufarm_arduino_sensors](https://github.com/farm-urban/fufarm_arduino_sensors) respository that can be used to allow sensors on an Arduino to send data to Home Assistant via the Mosquitto broker.
+
+## Hardware
+
+See [spreadsheet](https://docs.google.com/spreadsheets/d/1INuITc9KiMfbaHkqrkumXDoDMLmzcywDlFj6HvxnMQc/edit?gid=142833489#gid=142833489)
 
 ## Setup
 
