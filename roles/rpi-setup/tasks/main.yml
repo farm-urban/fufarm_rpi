@@ -44,6 +44,12 @@
     path: /opt
     owner: "{{ ansible_user }}"
 
+- name: Disable wifi (we only connect via the router with ethernet)
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    line: "dtoverlay=disable-wifi"
+    regexp: "^dtoverlay=disable-wifi"
+
 # Need to reboot here as there could be a kernel upgrade
 - name: Check the reboot-required file
   ansible.builtin.stat:
