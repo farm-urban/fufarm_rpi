@@ -1,0 +1,94 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# ACCEPT LOOPBACK
+-A INPUT -i lo -j ACCEPT
+# FIRST PACKET HAS TO BE TCP SYN
+-A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+
+# DROP FRAGMENTS
+-A INPUT -f -j DROP
+
+# DROP XMAS PACKETS
+-A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+
+# DROP NULL PACKETS
+-A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
+# DROP EXCESSIVE TCP RST PACKETS
+-A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
+
+# DROP ALL INVALID PACKETS
+-A INPUT -m state --state INVALID -j DROP
+-A FORWARD -m state --state INVALID -j DROP
+-A OUTPUT -m state --state INVALID -j DROP
+
+# ICMP SMURF ATTACKS + RATE LIMIT THE REST
+-A INPUT -p icmp --icmp-type address-mask-request -j DROP
+-A INPUT -p icmp --icmp-type timestamp-request -j DROP
+-A INPUT -p icmp --icmp-type router-solicitation -j DROP
+-A INPUT -p icmp -m limit --limit 2/second -j ACCEPT
+
+# ACCEPT SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+# DROP SYN-FLOOD PACKETS
+-A INPUT -p tcp -m state --state NEW -m limit --limit 50/second --limit-burst 50 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -j DROP
+
+# ALLOW ESTABLISHED CONNECTIONS
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Port forwarding
+# ETH
+-A FORWARD -i {{ wifi_client_interface }} -o {{ eth_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ eth_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+{% if tailscale %}
+-A FORWARD -i {{ tailscale_interface }} -o {{ eth_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ eth_interface }} -o {{ tailscale_interface }} -j ACCEPT
+{% endif %}
+{% if access_point %}
+-A FORWARD -i {{ wifi_client_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ wifi_client_interface }} -j ACCEPT
+{% if tailscale %}
+-A FORWARD -i {{ tailscale_interface }} -o {{ wifi_ap_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ wifi_ap_interface }} -o {{ tailscale_interface }} -j ACCEPT
+{% endif %}
+{% endif %}
+
+
+# DHCP and DNS for AP and ETH
+{% if access_point %}
+-A INPUT -p udp --sport 67:68 -i {{ wifi_ap_interface }} -j ACCEPT
+-A INPUT -p udp --dport 53 -i {{ wifi_ap_interface }} -j ACCEPT
+{% endif %}
+-A INPUT -p udp --sport 67:68 -i {{ eth_interface }} -j ACCEPT
+-A INPUT -p udp --dport 53 -i {{ eth_interface }} -j ACCEPT
+
+# For Debugging
+#-N LOGGING
+#-A INPUT -j LOGGING
+#-A LOGGING -m limit --limit 2/min -j LOG --log-prefix "IPTables-Dropped: " --log-level 4
+#-A LOGGING -j DROP
+
+COMMIT
+
+# Port forwarding for AP
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
+{% if access_point %}
+-A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ wifi_client_interface }} -j MASQUERADE
+{% endif %}
+{% if tailscale %}
+-A POSTROUTING -s {{ eth_interface_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
+{% if access_point %}
+-A POSTROUTING -s {{ wifi_ap_address | ansible.utils.ipsubnet(24) }} -o {{ tailscale_interface }} -j MASQUERADE
+{% endif %}
+{% endif %}
+COMMIT
