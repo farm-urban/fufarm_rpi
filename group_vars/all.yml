@@ -14,3 +14,4 @@ do_rpi_arduino_sensors: false
 
 ## Core variables
 rpi_user: fu
+disable_wifi: false
